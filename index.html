@@ -26,7 +26,7 @@ var el = document.getElementById('aniimated-thumbnials')
 
 function create() {
 
-  for (var i = 1; i <= 4; i++) {
+  for (var i = 1; i <= 10; i++) {
     var slide = {
       src: container + 'imagelist/' + i + '.jpg?' + new Date().getTime(),
       thumb: container + 'imagelist/' + i + '.jpg?' + new Date().getTime(),
@@ -53,7 +53,7 @@ function refresh() {
 
   setTimeout(function() {
     var slides = []
-    for (var i = 1; i <= 4; i++) {
+    for (var i = 1; i <= 10; i++) {
       var slide = {
         src: container + 'imagelist/' + i + '.jpg?' + new Date().getTime(),
         thumb: container + 'imagelist/' + i + '.jpg?' + new Date().getTime(),
