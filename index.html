@@ -19,17 +19,18 @@
 
 <script>
 
-var container = 'https://melvin.databox.me/'
+var container = 'https://melvin.databox.me/imagelist/'
 
 var slides = []
 var el = document.getElementById('aniimated-thumbnials')
 
+
 function create() {
 
-  for (var i = 1; i <= 10; i++) {
+  for (var i = 1; i <= 20; i++) {
     var slide = {
-      src: container + 'imagelist/' + i + '.jpg?' + new Date().getTime(),
-      thumb: container + 'imagelist/' + i + '.jpg?' + new Date().getTime(),
+      src: container + i + '.jpg?' + new Date().getTime(),
+      thumb: container + i + '.jpg?' + new Date().getTime(),
       subHtml: 'An image number ' + i
     }
     slides.push(slide)
@@ -53,10 +54,10 @@ function refresh() {
 
   setTimeout(function() {
     var slides = []
-    for (var i = 1; i <= 10; i++) {
+    for (var i = 1; i <= 20; i++) {
       var slide = {
-        src: container + 'imagelist/' + i + '.jpg?' + new Date().getTime(),
-        thumb: container + 'imagelist/' + i + '.jpg?' + new Date().getTime(),
+        src: container + i + '.jpg?' + new Date().getTime(),
+        thumb: container + i + '.jpg?' + new Date().getTime(),
         subHtml: 'An image number ' + i
       }
       slides.push(slide)
