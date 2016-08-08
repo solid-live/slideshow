@@ -19,10 +19,26 @@
 
 <script>
 
-var container = 'https://melvin.databox.me/imagelist/'
+// utils
+function getParam(name) {
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp(regexS);
+  var results = regex.exec(window.location.href);
+  if( results == null ) {
+    return "";
+  } else {
+    return decodeURIComponent(results[1]);
+  }
+}
 
+
+// globals
+var container = getParam('container') || 'https://melvin.databox.me/imagelist/'
 var slides = []
 var el = document.getElementById('aniimated-thumbnials')
+
+
 
 
 function create() {
