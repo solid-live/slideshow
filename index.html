@@ -11,6 +11,8 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
+  <script src="https://solid.github.io/releases/rdflib.js/rdflib-0.7.0.min.js"></script>
+
 </head>
 <body>
 
@@ -18,6 +20,8 @@
   </div>
 
 <script>
+
+//var solid = SolidClient
 
 // utils
 function getParam(name) {
@@ -37,16 +41,16 @@ function getParam(name) {
 var container = getParam('container') || 'https://melvin.databox.me/imagelist/'
 var slides = []
 var el = document.getElementById('aniimated-thumbnials')
-
+var files = []
 
 
 
 function create() {
 
-  for (var i = 1; i <= 20; i++) {
+  for (var i = 0; i < files.length; i++) {
     var slide = {
-      src: container + i + '.jpg?' + new Date().getTime(),
-      thumb: container + i + '.jpg?' + new Date().getTime(),
+      src: files[i] + '?' + new Date().getTime(),
+      thumb: files[i] + '?' + new Date().getTime(),
       subHtml: 'An image number ' + i
     }
     slides.push(slide)
@@ -70,10 +74,10 @@ function refresh() {
 
   setTimeout(function() {
     var slides = []
-    for (var i = 1; i <= 20; i++) {
+    for (var i = 0; i < files.length; i++) {
       var slide = {
-        src: container + i + '.jpg?' + new Date().getTime(),
-        thumb: container + i + '.jpg?' + new Date().getTime(),
+        src: files[i] + '?' + new Date().getTime(),
+        thumb: files[i] + '?' + new Date().getTime(),
         subHtml: 'An image number ' + i
       }
       slides.push(slide)
@@ -93,7 +97,6 @@ function refresh() {
 
 }
 
-create()
 
 //window.lgData[0].slide(2);
 
@@ -174,6 +177,24 @@ connectToSocket(container)
 setTimeout(function() {
   document.getElementById('i1').click()
 }, 0)
+
+
+console.log('loading container', container)
+g = $rdf.graph();
+f = $rdf.fetcher(g);
+
+
+f.nowOrWhenFetched( container , undefined, function(ok, body) {
+  var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(container))
+  console.log(arr)
+  for (var i = 0; i < arr.length; i++) {
+    var file = arr[i]
+    files.push(file.object.uri)
+  }
+  create()
+
+})
+
 
 </script>
 </body>
