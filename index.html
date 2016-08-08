@@ -1,0 +1,163 @@
+<html>
+<head>
+  <link href="https://sachinchoolur.github.io/lightgallery.js/lightgallery/css/lightgallery.css" rel="stylesheet">
+  <link href="https://sachinchoolur.github.io/lightgallery.js/lightgallery/css/lg-transitions.css" rel="stylesheet">
+
+  <script src="https://sachinchoolur.github.io/lightgallery.js/lightgallery/js/lightgallery.js"></script>
+
+  <!-- lightgallery plugins -->
+  <script src="https://sachinchoolur.github.io/lightgallery.js/lightgallery/js/lg-thumbnail.js"></script>
+  <script src="https://sachinchoolur.github.io/lightgallery.js/lightgallery/js/lg-fullscreen.js"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+</head>
+<body>
+
+  <div id="aniimated-thumbnials">
+  </div>
+
+<script>
+
+var container = 'https://melvin.databox.me/'
+
+var slides = []
+var el = document.getElementById('aniimated-thumbnials')
+
+function create() {
+
+  for (var i = 1; i <= 4; i++) {
+    var slide = {
+      src: container + 'imagelist/' + i + '.jpg?' + new Date().getTime(),
+      thumb: container + 'imagelist/' + i + '.jpg?' + new Date().getTime(),
+      subHtml: 'An image number ' + i
+    }
+    slides.push(slide)
+  }
+
+
+  lightGallery(el, {
+      thumbnail:true,
+
+      dynamic: true,
+      dynamicEl: slides
+
+  })
+
+}
+
+function refresh() {
+
+  var el = document.getElementById('aniimated-thumbnials');
+  window.lgData[el.getAttribute('lg-uid')].destroy(true)
+
+  setTimeout(function() {
+    var slides = []
+    for (var i = 1; i <= 4; i++) {
+      var slide = {
+        src: container + 'imagelist/' + i + '.jpg?' + new Date().getTime(),
+        thumb: container + 'imagelist/' + i + '.jpg?' + new Date().getTime(),
+        subHtml: 'An image number ' + i
+      }
+      slides.push(slide)
+    }
+
+
+    lightGallery(document.getElementById('aniimated-thumbnials'), {
+        thumbnail:true,
+
+        dynamic: true,
+        dynamicEl: slides
+
+    })
+
+  }, 500)
+
+
+}
+
+create()
+
+//window.lgData[0].slide(2);
+
+
+$scope = {}
+
+/**
+ * Get wss from URI
+ * @param  {String} uri The URI to use
+ */
+function getWss(uri) {
+  return 'wss://' + uri.split('/')[2];
+}
+
+
+/**
+ * Connect to a web socket
+ * @param  {String}  sub Where to subscribe to
+ * @param  {boolean} quiet dont ping server
+ */
+function connectToSocket(sub, quiet) {
+  // Some servers time out after 5 minutes inactive
+  var INTERVAL  = 240 * 1000;
+  var RECONNECT = 60 * 1000;
+
+  if ($scope.socket) return;
+
+  var socket;
+
+  console.log('connecting to : ' + sub);
+  var wss = getWss(sub);
+  console.log('connecting to : ' + wss);
+
+  socket = new WebSocket(wss);
+
+  socket.onopen = function(){
+    console.log(sub);
+    $scope.socket = socket;
+    socket.send('sub ' + sub, socket);
+
+    if (!quiet) {
+      setInterval(function() { socket.send('ping'); }, INTERVAL);
+    }
+
+  };
+
+  socket.onerror = function(){
+    console.log('socket error');
+    setTimeout(connectToSocket, RECONNECT);
+  };
+
+  socket.onclose = function(){
+    console.log('socket closed');
+    setTimeout(connectToSocket, RECONNECT);
+  };
+
+  socket.onmessage = function(msg) {
+    var a = msg.data.split(' ');
+    if (a[0] !== 'pub') return;
+    processSocket(a[1]);
+  };
+
+}
+
+/**
+ * Process message from socket
+ * @param  {String} uri uri that has changed
+ */
+function processSocket(uri) {
+  console.log(uri);
+  refresh()
+}
+
+connectToSocket(container)
+
+
+
+setTimeout(function() {
+  document.getElementById('i1').click()
+}, 0)
+
+</script>
+</body>
+<html>
