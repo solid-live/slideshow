@@ -39,6 +39,7 @@ function getParam(name) {
 
 // globals
 var container = getParam('container') || 'https://melvin.databox.me/imagelist/'
+var wss = getParam('wss') || container
 var slides = []
 var el = document.getElementById('aniimated-thumbnials')
 var files = []
@@ -108,8 +109,7 @@ $scope = {}
  * @param  {String} uri The URI to use
  */
 function getWss(uri) {
-  var wss = getParam('wss')
-  var ret = wss || 'wss://' + uri.split('/')[2]
+  var ret = 'wss://' + uri.split('/')[2]
   return ret
 }
 
@@ -172,7 +172,7 @@ function processSocket(uri) {
   refresh()
 }
 
-connectToSocket(container)
+connectToSocket(wss)
 
 
 
