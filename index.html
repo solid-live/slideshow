@@ -108,7 +108,9 @@ $scope = {}
  * @param  {String} uri The URI to use
  */
 function getWss(uri) {
-  return 'wss://' + uri.split('/')[2];
+  var wss = getParam('wss')
+  var ret = wss || 'wss://' + uri.split('/')[2]
+  return ret
 }
 
 
