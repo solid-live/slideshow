@@ -8,7 +8,8 @@
   <!-- lightgallery plugins -->
   <script src="https://sachinchoolur.github.io/lightgallery.js/lightgallery/js/lg-thumbnail.js"></script>
   <script src="https://sachinchoolur.github.io/lightgallery.js/lightgallery/js/lg-fullscreen.js"></script>
-  <script src="https://sachinchoolur.github.io/lightgallery.js/lightgallery/js/lg-video.js"></script>
+  <script src="js/lg-video.js"></script>
+  <script src="https://sachinchoolur.github.io/lightgallery.js/lightgallery/js/lg-autoplay.js"></script>
   <script src="https://f.vimeocdn.com/js/froogaloop2.min.js"></script>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
@@ -57,7 +58,13 @@ function create() {
     var slide = {
       src: files[i] + '?' + new Date().getTime(),
       thumb: files[i] + '?' + new Date().getTime(),
-      subHtml: 'Playlist item : ' + ( i + 1 )
+      subHtml: 'Playlist item : ' + ( i + 1 ),
+      videoAutoplay: false,
+      vimeoPlayerParams: { autoplay: 0 },
+      youtubePlayerParams: { autoplay: 0 },
+      autoplay: false,
+      autoplayControls: true
+
     }
     slides.push(slide)
   }
@@ -67,7 +74,10 @@ function create() {
       thumbnail:true,
 
       dynamic: true,
-      dynamicEl: slides
+      dynamicEl: slides,
+      videoAutoplay: false,
+      autoplay: false,
+      autoplayControls: true
 
   })
 
@@ -84,7 +94,10 @@ function refresh() {
       var slide = {
         src: files[i] + '?' + new Date().getTime(),
         thumb: files[i] + '?' + new Date().getTime(),
-        subHtml: 'An image number ' + i
+        subHtml: 'An image number ' + i,
+        videoAutoplay: false,
+        autoplay: false,
+        autoplayControls: true
       }
       slides.push(slide)
     }
@@ -94,7 +107,12 @@ function refresh() {
         thumbnail:true,
 
         dynamic: true,
-        dynamicEl: slides
+        dynamicEl: slides,
+        videoAutoplay: false,
+        vimeoPlayerParams: { autoplay: 0 },
+        youtubePlayerParams: { autoplay: 0 },
+        autoplay: false,
+        autoplayControls: true
 
     })
 
@@ -181,9 +199,6 @@ connectToSocket(wss)
 
 
 
-setTimeout(function() {
-  document.getElementById('i1').click()
-}, 0)
 
 console.log('loading container', container)
 g = $rdf.graph();
