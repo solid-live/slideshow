@@ -1,0 +1,248 @@
+<html>
+<head>
+  <link href="css/lightgallery.css" rel="stylesheet">
+  <link href="css/lg-transitions.css" rel="stylesheet">
+
+  <script src="js/lightgallery.js"></script>
+
+  <!-- lightgallery plugins -->
+  <script src="https://sachinchoolur.github.io/lightgallery.js/lightgallery/js/lg-thumbnail.js"></script>
+  <script src="https://sachinchoolur.github.io/lightgallery.js/lightgallery/js/lg-fullscreen.js"></script>
+  <script src="js/lg-video.js"></script>
+  <script src="https://sachinchoolur.github.io/lightgallery.js/lightgallery/js/lg-autoplay.js"></script>
+  <script src="https://f.vimeocdn.com/js/froogaloop2.min.js"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+  <script src="https://solid.github.io/releases/rdflib.js/rdflib-0.7.0.min.js"></script>
+
+
+</head>
+<body>
+
+  <div id="aniimated-thumbnials">
+    <div id="vid"></div>
+
+  </div>
+
+<script>
+
+//var solid = SolidClient
+
+// utils
+function getParam(name) {
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp(regexS);
+  var results = regex.exec(window.location.href);
+  if( results == null ) {
+    return "";
+  } else {
+    return decodeURIComponent(results[1]);
+  }
+}
+
+
+// globals
+var container = getParam('container') || 'https://melvin.databox.me/imagelist/'
+var wss = getParam('wss') || container
+var playlist = getParam('playlist')
+
+var slides = []
+var el = document.getElementById('aniimated-thumbnials')
+var files = []
+
+
+
+function create() {
+
+  for (var i = 0; i < files.length; i++) {
+    var slide = {
+      href: files[i] + '?' + new Date().getTime(),
+      thumb: files[i] + '?' + new Date().getTime(),
+      subHtml: 'Playlist item : ' + ( i + 1 ),
+      videoAutoplay: false,
+      vimeoPlayerParams: { autoplay: 0 },
+      youtubePlayerParams: { autoplay: 0 },
+      autoplay: false,
+      autoplayControls: true,
+      html: '<video id="vid" controls> <source src="' + files[i] + '?' + new Date().getTime() + '" type="video/mp4"></video>'
+
+    }
+    slides.push(slide)
+  }
+
+
+  lightGallery(el, {
+      thumbnail:true,
+
+      dynamic: true,
+      dynamicEl: slides,
+      videoAutoplay: false,
+      autoplay: false,
+      autoplayControls: true
+
+  })
+
+
+$().removeClass( "lg-video" )
+
+}
+
+function refresh() {
+
+  var el = document.getElementById('aniimated-thumbnials');
+  window.lgData[el.getAttribute('lg-uid')].destroy(true)
+
+  setTimeout(function() {
+    var slides = []
+    for (var i = 0; i < files.length; i++) {
+      var slide = {
+        src: files[i] + '?' + new Date().getTime(),
+        thumb: files[i] + '?' + new Date().getTime(),
+        subHtml: 'An image number ' + i,
+        videoAutoplay: false,
+        autoplay: false,
+        autoplayControls: true
+      }
+      slides.push(slide)
+    }
+
+
+    lightGallery(document.getElementById('aniimated-thumbnials'), {
+        thumbnail:true,
+
+        dynamic: true,
+        dynamicEl: slides,
+        videoAutoplay: false,
+        vimeoPlayerParams: { autoplay: 0 },
+        youtubePlayerParams: { autoplay: 0 },
+        autoplay: false,
+        autoplayControls: true
+
+    })
+
+  }, 500)
+
+
+}
+
+
+//window.lgData[0].slide(2);
+
+
+$scope = {}
+
+/**
+ * Get wss from URI
+ * @param  {String} uri The URI to use
+ */
+function getWss(uri) {
+  var ret = 'wss://' + uri.split('/')[2]
+  return ret
+}
+
+
+/**
+ * Connect to a web socket
+ * @param  {String}  sub Where to subscribe to
+ * @param  {boolean} quiet dont ping server
+ */
+function connectToSocket(sub, quiet) {
+  // Some servers time out after 5 minutes inactive
+  var INTERVAL  = 240 * 1000;
+  var RECONNECT = 60 * 1000;
+
+  if ($scope.socket) return;
+
+  var socket;
+
+  console.log('connecting to : ' + sub);
+  var wss = getWss(sub);
+  console.log('connecting to : ' + wss);
+
+  socket = new WebSocket(wss);
+
+  socket.onopen = function(){
+    console.log(sub);
+    $scope.socket = socket;
+    socket.send('sub ' + sub, socket);
+
+    if (!quiet) {
+      setInterval(function() { socket.send('ping'); }, INTERVAL);
+    }
+
+  };
+
+  socket.onerror = function(){
+    console.log('socket error');
+    setTimeout(connectToSocket, RECONNECT);
+  };
+
+  socket.onclose = function(){
+    console.log('socket closed');
+    setTimeout(connectToSocket, RECONNECT);
+  };
+
+  socket.onmessage = function(msg) {
+    var a = msg.data.split(' ');
+    if (a[0] !== 'pub') return;
+    processSocket(a[1]);
+  };
+
+}
+
+/**
+ * Process message from socket
+ * @param  {String} uri uri that has changed
+ */
+function processSocket(uri) {
+  console.log(uri);
+  refresh()
+}
+
+connectToSocket(wss)
+
+
+
+
+console.log('loading container', container)
+g = $rdf.graph();
+f = $rdf.fetcher(g);
+
+if (playlist) {
+
+
+  f.nowOrWhenFetched(playlist , undefined, function(ok, body) {
+    var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(playlist))
+    console.log(arr)
+    for (var i = 0; i < arr.length; i++) {
+      var file = arr[i]
+      files.push(file.object.uri)
+    }
+    create()
+
+  })
+
+
+} else {
+
+
+  f.nowOrWhenFetched( container , undefined, function(ok, body) {
+    var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(container))
+    console.log(arr)
+    for (var i = 0; i < arr.length; i++) {
+      var file = arr[i]
+      files.push(file.object.uri)
+    }
+    create()
+
+  })
+
+}
+
+
+
+</script>
+</body>
+<html>
