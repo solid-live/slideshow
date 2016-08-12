@@ -75,7 +75,7 @@
                         console.error('Make sure you have included videojs');
                     }
                 } else {
-                    _this.core.___slide[event.detail.index].querySelector('.lg-html5').play();
+                    //_this.core.___slide[event.detail.index].querySelector('.lg-html5').play();
                 }
             }
         });

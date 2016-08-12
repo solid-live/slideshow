@@ -57,9 +57,11 @@ var files = []
 function create() {
 
   for (var i = 0; i < files.length; i++) {
+    var file = files[i]
+    var thumb = file.replace('/video/', '/thumbnail/') + '.png'
     var slide = {
       href: files[i] + '?' + new Date().getTime(),
-      thumb: files[i] + '?' + new Date().getTime(),
+      "thumb": thumb + '?' + new Date().getTime(),
       subHtml: 'Playlist item : ' + ( i + 1 ),
       videoAutoplay: false,
       vimeoPlayerParams: { autoplay: 0 },
@@ -91,39 +93,44 @@ $().removeClass( "lg-video" )
 
 function refresh() {
 
+/*
   var el = document.getElementById('aniimated-thumbnials');
   window.lgData[el.getAttribute('lg-uid')].destroy(true)
 
   setTimeout(function() {
-    var slides = []
     for (var i = 0; i < files.length; i++) {
+      var file = files[i]
+      var thumb = file.replace('/video/', '/thumbnail/') + '.png'
       var slide = {
-        src: files[i] + '?' + new Date().getTime(),
-        thumb: files[i] + '?' + new Date().getTime(),
-        subHtml: 'An image number ' + i,
+        href: files[i] + '?' + new Date().getTime(),
+        "thumb": thumb + '?' + new Date().getTime(),
+        subHtml: 'Playlist item : ' + ( i + 1 ),
         videoAutoplay: false,
+        vimeoPlayerParams: { autoplay: 0 },
+        youtubePlayerParams: { autoplay: 0 },
         autoplay: false,
-        autoplayControls: true
+        autoplayControls: true,
+        html: '<video id="vid" controls> <source src="' + files[i] + '?' + new Date().getTime() + '" type="video/mp4"></video>'
+
       }
       slides.push(slide)
     }
 
 
-    lightGallery(document.getElementById('aniimated-thumbnials'), {
+    lightGallery(el, {
         thumbnail:true,
 
         dynamic: true,
         dynamicEl: slides,
         videoAutoplay: false,
-        vimeoPlayerParams: { autoplay: 0 },
-        youtubePlayerParams: { autoplay: 0 },
         autoplay: false,
         autoplayControls: true
 
     })
 
   }, 500)
-
+*/
+location.reload()
 
 }
 
