@@ -171,7 +171,7 @@ function connectToSocket(sub, quiet) {
   socket = new WebSocket(wss);
 
   socket.onopen = function(){
-    console.log(sub);
+    console.log('subscribing to',  sub);
     $scope.socket = socket;
     socket.send('sub ' + sub, socket);
 
@@ -192,6 +192,7 @@ function connectToSocket(sub, quiet) {
   };
 
   socket.onmessage = function(msg) {
+    console.log('got pub from', msg);
     var a = msg.data.split(' ');
     if (a[0] !== 'pub') return;
     processSocket(a[1]);
@@ -204,7 +205,7 @@ function connectToSocket(sub, quiet) {
  * @param  {String} uri uri that has changed
  */
 function processSocket(uri) {
-  console.log(uri);
+  console.log('got ping from', uri);
   refresh()
 }
 
