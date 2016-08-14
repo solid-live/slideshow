@@ -58,9 +58,9 @@ function create() {
 
   for (var i = 0; i < files.length; i++) {
     var file = files[i]
-    var thumb = file.replace('/video/', '/thumbnail/') + '.png'
+    var thumb = file.uri.replace('/video/', '/thumbnail/') + '.png'
     var slide = {
-      href: files[i] + '?' + new Date().getTime(),
+      href: file.uri + '?' + new Date().getTime(),
       "thumb": thumb + '?' + new Date().getTime(),
       subHtml: 'Playlist item : ' + ( i + 1 ),
       videoAutoplay: false,
@@ -68,7 +68,7 @@ function create() {
       youtubePlayerParams: { autoplay: 0 },
       autoplay: false,
       autoplayControls: true,
-      html: '<video id="vid" controls> <source src="' + files[i] + '?' + new Date().getTime() + '" type="video/mp4"></video>'
+      html: '<video id="vid" controls> <source src="' + file.uri + '?' + new Date().getTime() + '" type="video/mp4"></video>'
 
     }
     slides.push(slide)
@@ -93,10 +93,11 @@ $().removeClass( "lg-video" )
 
 function refresh() {
 
-/*
   var el = document.getElementById('aniimated-thumbnials');
   window.lgData[el.getAttribute('lg-uid')].destroy(true)
+  slides = []
 
+/*
   setTimeout(function() {
     for (var i = 0; i < files.length; i++) {
       var file = files[i]
@@ -218,6 +219,27 @@ console.log('loading container', container)
 g = $rdf.graph();
 f = $rdf.fetcher(g);
 
+
+var fetchURI = playlist || container
+
+f.nowOrWhenFetched(fetchURI , undefined, function(ok, body) {
+  var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(fetchURI))
+  console.log(arr)
+  for (var i = 0; i < arr.length; i++) {
+    var file = arr[i]
+    var subject = file.subject
+    var mtime = g.any(file.object, $rdf.sym("http://www.w3.org/ns/posix/stat#mtime"))
+    console.log(mtime.value)
+    files.push({ "uri" : file.object.uri, "mtime" : mtime.value })
+  }
+  files = files.sort(function(a,b) {
+    return parseFloat(b.mtime) - parseFloat(a.mtime)
+  })
+  create()
+
+})
+/*
+
 if (playlist) {
 
 
@@ -228,6 +250,7 @@ if (playlist) {
       var file = arr[i]
       files.push(file.object.uri)
     }
+    files = files.sort()
     create()
 
   })
@@ -243,11 +266,45 @@ if (playlist) {
       var file = arr[i]
       files.push(file.object.uri)
     }
+    files = files.sort()
     create()
 
   })
 
 }
+*/
+
+
+document.addEventListener('keydown', function(e){
+
+   if(e.keyCode == 80 ){
+     var el = document.getElementsByTagName("video")[0]
+     el.play()
+     rfs =
+           el.requestFullScreen
+        || el.webkitRequestFullScreen
+        || el.mozRequestFullScreen
+     rfs.call(el);
+
+     el.onended = function(e) {
+       console.log(e)
+       if (document.exitFullscreen) {
+        document.exitFullscreen();
+       } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+       } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+       } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+       }
+     }
+
+     e.preventDefault();
+     return false;
+   }
+
+ });
+
 
 
 
