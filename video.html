@@ -62,7 +62,7 @@ function create() {
     var slide = {
       href: file.uri + '?' + new Date().getTime(),
       "thumb": thumb + '?' + new Date().getTime(),
-      subHtml: 'Playlist item : ' + ( i + 1 ),
+      subHtml: 'Playlist item : <a href="#" onclick="play()">' + ( i + 1 ) + '</a>' ,
       videoAutoplay: false,
       vimeoPlayerParams: { autoplay: 0 },
       youtubePlayerParams: { autoplay: 0 },
@@ -274,37 +274,60 @@ if (playlist) {
 }
 */
 
+function putFile(file, data) {
+  xhr = new XMLHttpRequest();
+  xhr.open('PUT', file, false);
+  xhr.setRequestHeader('Content-Type', 'text/turtle; charset=UTF-8');
+  xhr.send(data);
+}
+
+var hook = getParam('hook')
+
+function put(name) {
+  putFile(hook + name, '')
+}
+
+
+function play() {
+  var el = document.getElementsByTagName("video")[0]
+  el.play()
+  rfs =
+        el.requestFullScreen
+     || el.webkitRequestFullScreen
+     || el.mozRequestFullScreen
+  rfs.call(el);
+
+  el.onended = function(e) {
+    console.log(e)
+    if (document.exitFullscreen) {
+     document.exitFullscreen();
+    } else if (document.msExitFullscreen) {
+     document.msExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+     document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+     document.webkitExitFullscreen();
+    }
+    if (hook) {
+      put(0)
+    }
+  }
+
+}
+
+
+
 
 document.addEventListener('keydown', function(e){
 
    if(e.keyCode == 80 ){
-     var el = document.getElementsByTagName("video")[0]
-     el.play()
-     rfs =
-           el.requestFullScreen
-        || el.webkitRequestFullScreen
-        || el.mozRequestFullScreen
-     rfs.call(el);
-
-     el.onended = function(e) {
-       console.log(e)
-       if (document.exitFullscreen) {
-        document.exitFullscreen();
-       } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-       } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-       } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-       }
-     }
+     play()
 
      e.preventDefault();
      return false;
    }
 
- });
-
+ })
 
 
 
