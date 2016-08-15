@@ -62,13 +62,13 @@ function create() {
     var slide = {
       href: file.uri + '?' + new Date().getTime(),
       "thumb": thumb + '?' + new Date().getTime(),
-      subHtml: 'Playlist item : <a href="#" onclick="play()">' + ( i + 1 ) + '</a>' ,
+      subHtml: '<span class="pl">Playlist</span> item : <a href="#" onclick="play()">' + ( i + 1 ) + '</a>' ,
       videoAutoplay: false,
       vimeoPlayerParams: { autoplay: 0 },
       youtubePlayerParams: { autoplay: 0 },
       autoplay: false,
       autoplayControls: true,
-      html: '<video id="vid" controls> <source src="' + file.uri + '?' + new Date().getTime() + '" type="video/mp4"></video>'
+      html: '<video id="vid" width="320" controls> <source src="' + file.uri + '?' + new Date().getTime() + '" type="video/mp4"></video>'
 
     }
     slides.push(slide)
@@ -327,7 +327,9 @@ document.addEventListener('keydown', function(e){
      return false;
    }
 
- })
+})
+
+
 
 
 
