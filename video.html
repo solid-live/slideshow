@@ -316,6 +316,16 @@ function play() {
 }
 
 
+$(function() {
+  setTimeout(function() {
+    var el = document.getElementById("lg-counter")
+    console.log('el', el)
+    el.onclick = function() {
+      play()
+    }
+  }, 1000)
+})
+
 
 
 document.addEventListener('keydown', function(e){
