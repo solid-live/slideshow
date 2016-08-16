@@ -147,7 +147,7 @@ $scope = {}
  */
 function getWss(uri) {
   console.log('getting wss for ', uri)
-  var ret = 'wss://' + uri.split('/')[2]
+  var ret = 'ws://' + uri.split('/')[2]
   return ret
 }
 
