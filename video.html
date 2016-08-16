@@ -68,7 +68,7 @@ function create() {
       youtubePlayerParams: { autoplay: 0 },
       autoplay: false,
       autoplayControls: true,
-      html: '<video class="lg-video-object lg-youtube lg-object" controls> <source src="' + file.uri + '?' + new Date().getTime() + '" type="video/mp4"></video>'
+      html: '<video class="lg-video-object lg-youtube lg-object" controls> <source src="' + file.uri + '?' + new Date().getTime() + '" ></video>'
 
     }
     slides.push(slide)
@@ -146,10 +146,29 @@ $scope = {}
  * @param  {String} uri The URI to use
  */
 function getWss(uri) {
+  console.log('getting wss for ', uri)
   var ret = 'wss://' + uri.split('/')[2]
   return ret
 }
 
+
+function getType(str) {
+  var type = -1
+  var match = /\/[0-9]+,[0-9]+,.*/.test(str)
+  if (!match) {
+    return -1
+  }
+  var a = str.split(',')
+  if (a && a[1]) {
+    type = parseInt(a[1])
+  } else {
+    return -1
+  }
+  if (isNaN(type)) {
+    return -1
+  }
+  return type
+}
 
 /**
  * Connect to a web socket
@@ -230,10 +249,16 @@ f.nowOrWhenFetched(fetchURI , undefined, function(ok, body) {
     var subject = file.subject
     var mtime = g.any(file.object, $rdf.sym("http://www.w3.org/ns/posix/stat#mtime"))
     console.log(mtime.value)
-    files.push({ "uri" : file.object.uri, "mtime" : mtime.value })
+    var type = getType(file.object.uri)
+    files.push({ "uri" : file.object.uri, "mtime" : mtime.value, "type" : type })
   }
   files = files.sort(function(a,b) {
-    return parseFloat(b.mtime) - parseFloat(a.mtime)
+    if (a.type === b.type) {
+      return parseFloat(b.mtime) - parseFloat(a.mtime)
+    } else {
+      var order = [1,0,2]
+      return order[a.type] - order[b.type]
+    }
   })
   create()
 
