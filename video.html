@@ -136,9 +136,6 @@ location.reload()
 }
 
 
-//window.lgData[0].slide(2);
-
-
 $scope = {}
 
 /**
@@ -147,7 +144,7 @@ $scope = {}
  */
 function getWss(uri) {
   console.log('getting wss for ', uri)
-  var ret = 'ws://' + uri.split('/')[2]
+  var ret = 'wss://' + uri.split('/')[2]
   return ret
 }
 
