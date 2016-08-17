@@ -22,60 +22,59 @@
 
   <div id="aniimated-thumbnials">
     <div id="vid"></div>
-
   </div>
 
-<script>
+  <script>
 
-//var solid = SolidClient
+  //var solid = SolidClient
 
-// utils
-function getParam(name) {
-  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-  var regexS = "[\\?&]"+name+"=([^&#]*)";
-  var regex = new RegExp(regexS);
-  var results = regex.exec(window.location.href);
-  if( results == null ) {
-    return "";
-  } else {
-    return decodeURIComponent(results[1]);
-  }
-}
-
-
-// globals
-var container = getParam('container') || 'https://melvin.databox.me/imagelist/'
-var wss = getParam('wss') || container
-var playlist = getParam('playlist')
-
-var slides = []
-var el = document.getElementById('aniimated-thumbnials')
-var files = []
-
-
-
-function create() {
-
-  for (var i = 0; i < files.length; i++) {
-    var file = files[i]
-    var thumb = file.uri.replace('/video/', '/thumbnail/') + '.png'
-    var slide = {
-      href: file.uri + '?' + new Date().getTime(),
-      "thumb": thumb + '?' + new Date().getTime(),
-      subHtml: '<span class="pl">Playlist</span> item : <a href="#" onclick="play()">' + ( i + 1 ) + '</a>' ,
-      videoAutoplay: false,
-      vimeoPlayerParams: { autoplay: 0 },
-      youtubePlayerParams: { autoplay: 0 },
-      autoplay: false,
-      autoplayControls: true,
-      html: '<video class="lg-video-object lg-youtube lg-object" controls> <source src="' + file.uri + '?' + new Date().getTime() + '" ></video>'
-
+  // utils
+  function getParam(name) {
+    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    var regexS = "[\\?&]"+name+"=([^&#]*)";
+    var regex = new RegExp(regexS);
+    var results = regex.exec(window.location.href);
+    if( results == null ) {
+      return "";
+    } else {
+      return decodeURIComponent(results[1]);
     }
-    slides.push(slide)
   }
 
+  // globals
+  var container = getParam('container') || 'https://melvin.databox.me/imagelist/'
+  var wss = getParam('wss') || container
+  var playlist = getParam('playlist')
 
-  lightGallery(el, {
+  var slides = []
+  var el = document.getElementById('aniimated-thumbnials')
+  var files = []
+
+  /**
+   * creates slides
+   * @return {[type]} [description]
+   */
+  function create() {
+
+    for (var i = 0; i < files.length; i++) {
+      var file = files[i]
+      var thumb = file.uri.replace('/video/', '/thumbnail/') + '.png'
+      var slide = {
+        href: file.uri + '?' + new Date().getTime(),
+        "thumb": thumb + '?' + new Date().getTime(),
+        subHtml: '<span class="pl">Playlist</span> item : <a href="#" onclick="play()">' + ( i + 1 ) + '</a>' ,
+        videoAutoplay: false,
+        vimeoPlayerParams: { autoplay: 0 },
+        youtubePlayerParams: { autoplay: 0 },
+        autoplay: false,
+        autoplayControls: true,
+        html: '<video class="lg-video-object lg-youtube lg-object" controls> <source src="' + file.uri + '?' + new Date().getTime() + '" ></video>'
+
+      }
+      slides.push(slide)
+    }
+
+    lightGallery(el, {
       thumbnail:true,
 
       dynamic: true,
@@ -84,52 +83,54 @@ function create() {
       autoplay: false,
       autoplayControls: true
 
-  })
-
-
-$().removeClass( "lg-video" )
-
-}
-
-function refresh() {
-
-  var el = document.getElementById('aniimated-thumbnials');
-  window.lgData[el.getAttribute('lg-uid')].destroy(true)
-  slides = []
-
-/*
-  setTimeout(function() {
-    for (var i = 0; i < files.length; i++) {
-      var file = files[i]
-      var thumb = file.replace('/video/', '/thumbnail/') + '.png'
-      var slide = {
-        href: files[i] + '?' + new Date().getTime(),
-        "thumb": thumb + '?' + new Date().getTime(),
-        subHtml: 'Playlist item : ' + ( i + 1 ),
-        videoAutoplay: false,
-        vimeoPlayerParams: { autoplay: 0 },
-        youtubePlayerParams: { autoplay: 0 },
-        autoplay: false,
-        autoplayControls: true,
-        html: '<video id="vid" controls> <source src="' + files[i] + '?' + new Date().getTime() + '" type="video/mp4"></video>'
-
-      }
-      slides.push(slide)
-    }
-
-
-    lightGallery(el, {
-        thumbnail:true,
-
-        dynamic: true,
-        dynamicEl: slides,
-        videoAutoplay: false,
-        autoplay: false,
-        autoplayControls: true
-
     })
 
-  }, 500)
+    $().removeClass( "lg-video" )
+
+  }
+
+  /**
+   * Refresh slides
+   */
+  function refresh() {
+
+    var el = document.getElementById('aniimated-thumbnials');
+    window.lgData[el.getAttribute('lg-uid')].destroy(true)
+    slides = []
+
+    /*
+    setTimeout(function() {
+    for (var i = 0; i < files.length; i++) {
+    var file = files[i]
+    var thumb = file.replace('/video/', '/thumbnail/') + '.png'
+    var slide = {
+    href: files[i] + '?' + new Date().getTime(),
+    "thumb": thumb + '?' + new Date().getTime(),
+    subHtml: 'Playlist item : ' + ( i + 1 ),
+    videoAutoplay: false,
+    vimeoPlayerParams: { autoplay: 0 },
+    youtubePlayerParams: { autoplay: 0 },
+    autoplay: false,
+    autoplayControls: true,
+    html: '<video id="vid" controls> <source src="' + files[i] + '?' + new Date().getTime() + '" type="video/mp4"></video>'
+
+  }
+  slides.push(slide)
+}
+
+
+lightGallery(el, {
+thumbnail:true,
+
+dynamic: true,
+dynamicEl: slides,
+videoAutoplay: false,
+autoplay: false,
+autoplayControls: true
+
+})
+
+}, 500)
 */
 location.reload()
 
@@ -139,16 +140,20 @@ location.reload()
 $scope = {}
 
 /**
- * Get wss from URI
- * @param  {String} uri The URI to use
- */
+* Get wss from URI
+* @param  {String} uri The URI to use
+*/
 function getWss(uri) {
   console.log('getting wss for ', uri)
   var ret = 'wss://' + uri.split('/')[2]
   return ret
 }
 
-
+/**
+ * Get type of uri
+ * @param  {string} str The uri
+ * @return {number}     The type or -1
+ */
 function getType(str) {
   var type = -1
   var match = /\/[0-9]+,[0-9]+,.*/.test(str)
@@ -168,10 +173,10 @@ function getType(str) {
 }
 
 /**
- * Connect to a web socket
- * @param  {String}  sub Where to subscribe to
- * @param  {boolean} quiet dont ping server
- */
+* Connect to a web socket
+* @param  {String}  sub Where to subscribe to
+* @param  {boolean} quiet dont ping server
+*/
 function connectToSocket(sub, quiet) {
   // Some servers time out after 5 minutes inactive
   var INTERVAL  = 240 * 1000;
@@ -218,9 +223,9 @@ function connectToSocket(sub, quiet) {
 }
 
 /**
- * Process message from socket
- * @param  {String} uri uri that has changed
- */
+* Process message from socket
+* @param  {String} uri uri that has changed
+*/
 function processSocket(uri) {
   console.log('got ping from', uri);
   refresh()
@@ -230,7 +235,7 @@ connectToSocket(wss)
 
 
 
-
+// main
 console.log('loading container', container)
 g = $rdf.graph();
 f = $rdf.fetcher(g);
@@ -265,33 +270,33 @@ f.nowOrWhenFetched(fetchURI , undefined, function(ok, body) {
 if (playlist) {
 
 
-  f.nowOrWhenFetched(playlist , undefined, function(ok, body) {
-    var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(playlist))
-    console.log(arr)
-    for (var i = 0; i < arr.length; i++) {
-      var file = arr[i]
-      files.push(file.object.uri)
-    }
-    files = files.sort()
-    create()
+f.nowOrWhenFetched(playlist , undefined, function(ok, body) {
+var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(playlist))
+console.log(arr)
+for (var i = 0; i < arr.length; i++) {
+var file = arr[i]
+files.push(file.object.uri)
+}
+files = files.sort()
+create()
 
-  })
+})
 
 
 } else {
 
 
-  f.nowOrWhenFetched( container , undefined, function(ok, body) {
-    var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(container))
-    console.log(arr)
-    for (var i = 0; i < arr.length; i++) {
-      var file = arr[i]
-      files.push(file.object.uri)
-    }
-    files = files.sort()
-    create()
+f.nowOrWhenFetched( container , undefined, function(ok, body) {
+var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(container))
+console.log(arr)
+for (var i = 0; i < arr.length; i++) {
+var file = arr[i]
+files.push(file.object.uri)
+}
+files = files.sort()
+create()
 
-  })
+})
 
 }
 */
@@ -314,21 +319,21 @@ function play() {
   var el = document.getElementsByTagName("video")[0]
   el.play()
   rfs =
-        el.requestFullScreen
-     || el.webkitRequestFullScreen
-     || el.mozRequestFullScreen
+  el.requestFullScreen
+  || el.webkitRequestFullScreen
+  || el.mozRequestFullScreen
   rfs.call(el);
 
   el.onended = function(e) {
     console.log(e)
     if (document.exitFullscreen) {
-     document.exitFullscreen();
+      document.exitFullscreen();
     } else if (document.msExitFullscreen) {
-     document.msExitFullscreen();
+      document.msExitFullscreen();
     } else if (document.mozCancelFullScreen) {
-     document.mozCancelFullScreen();
+      document.mozCancelFullScreen();
     } else if (document.webkitExitFullscreen) {
-     document.webkitExitFullscreen();
+      document.webkitExitFullscreen();
     }
     if (hook) {
       put(100)
@@ -352,12 +357,12 @@ $(function() {
 
 document.addEventListener('keydown', function(e){
 
-   if(e.keyCode == 80 ){
-     play()
+  if(e.keyCode == 80 ){
+    play()
 
-     e.preventDefault();
-     return false;
-   }
+    e.preventDefault();
+    return false;
+  }
 
 })
 
