@@ -368,10 +368,13 @@ function play(type) {
 
 $(function() {
   setTimeout(function() {
-    var el = document.getElementById("lg-counter")
-    console.log('el', el)
-    el.onclick = function() {
-      play(1)
+    var els = document.getElementsByClassName("lg-prev")
+    console.log('els', els)
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i]
+      el.onclick = function() {
+        play(1)
+      }
     }
 
     var el = document.getElementById("lg-autoplay")
