@@ -315,8 +315,26 @@ function put(name) {
 }
 
 
-function play() {
-  var el = document.getElementsByTagName("video")[0]
+function play(type) {
+  if (type === undefined) {
+    type = 1
+  }
+
+  var sources =  document.getElementsByTagName("source")
+  for (var i = 0; i < sources.length; i++) {
+    var source = sources[i].src
+    if (getType(source) === type) {
+      break
+    }
+  }
+
+
+  var el = document.getElementById('aniimated-thumbnials');
+  window.lgData[el.getAttribute('lg-uid')].slide(i)
+
+  var els = document.getElementsByTagName("video")
+  var el = els[i]
+
   el.play()
   rfs =
   el.requestFullScreen
@@ -336,7 +354,12 @@ function play() {
       document.webkitExitFullscreen();
     }
     if (hook) {
-      put(100)
+      if (type === 1) {
+        put(100)
+      }
+      if (type === 0) {
+        put(111)
+      }
     }
   }
 
@@ -348,8 +371,16 @@ $(function() {
     var el = document.getElementById("lg-counter")
     console.log('el', el)
     el.onclick = function() {
-      play()
+      play(1)
     }
+
+    var el = document.getElementById("lg-autoplay")
+    console.log('el', el)
+    el.onclick = function() {
+      play(0)
+    }
+
+
   }, 1000)
 })
 
@@ -358,7 +389,14 @@ $(function() {
 document.addEventListener('keydown', function(e){
 
   if(e.keyCode == 80 ){
-    play()
+    play(1)
+
+    e.preventDefault();
+    return false;
+  }
+
+  if(e.keyCode == 79 ){
+    play(0)
 
     e.preventDefault();
     return false;
