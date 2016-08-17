@@ -373,14 +373,14 @@ $(function() {
     for (var i = 0; i < els.length; i++) {
       var el = els[i]
       el.onclick = function() {
-        play(1)
+        play(0)
       }
     }
 
-    var el = document.getElementById("lg-autoplay")
+    el = document.getElementById("lg-autoplay")
     console.log('el', el)
     el.onclick = function() {
-      play(0)
+      play(1)
     }
 
 
