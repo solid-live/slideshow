@@ -68,7 +68,7 @@
         youtubePlayerParams: { autoplay: 0 },
         autoplay: false,
         autoplayControls: true,
-        html: '<video class="lg-video-object lg-youtube lg-object" controls> <source src="' + file.uri + '?' + new Date().getTime() + '" ></video>'
+        html: '<video class="lg-video-object lg-youtube lg-object" id="v' + i + '" controls> <source src="' + file.uri + '?' + new Date().getTime() + '" ></video>'
 
       }
       slides.push(slide)
@@ -319,11 +319,20 @@ function play(type) {
   if (type === undefined) {
     type = 1
   }
-
+/*
   var sources =  document.getElementsByTagName("source")
   for (var i = 0; i < sources.length; i++) {
     var source = sources[i].src
     if (getType(source) === type) {
+      break
+    }
+  }
+*/
+  var sources =  document.getElementsByTagName("source")
+  for (var i = 0; i < slides.length; i++) {
+    var slide = slides[i]
+    var href = slide.href
+    if (getType(href) === type) {
       break
     }
   }
@@ -332,36 +341,43 @@ function play(type) {
   var el = document.getElementById('aniimated-thumbnials');
   window.lgData[el.getAttribute('lg-uid')].slide(i)
 
-  var els = document.getElementsByTagName("video")
-  var el = els[i]
+  setTimeout(function() {
+    var id = 'v' + i
+    var el = document.getElementById(id)
+    console.log(i, id, el)
 
-  el.play()
-  rfs =
-  el.requestFullScreen
-  || el.webkitRequestFullScreen
-  || el.mozRequestFullScreen
-  rfs.call(el);
+    el.play()
+    rfs =
+    el.requestFullScreen
+    || el.webkitRequestFullScreen
+    || el.mozRequestFullScreen
+    rfs.call(el);
 
-  el.onended = function(e) {
-    console.log(e)
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    } else if (document.msExitFullscreen) {
-      document.msExitFullscreen();
-    } else if (document.mozCancelFullScreen) {
-      document.mozCancelFullScreen();
-    } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
-    }
-    if (hook) {
-      if (type === 1) {
-        put(100)
+    el.onended = function(e) {
+      console.log(e)
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
       }
-      if (type === 0) {
-        put(111)
+      if (hook) {
+        if (type === 1) {
+          put(100)
+        }
+        if (type === 0) {
+          put(111)
+        }
+        if (type === 2) {
+          put(113)
+        }
       }
     }
-  }
+  }, 700)
+
 
 }
 
@@ -395,10 +411,10 @@ $(function() {
       }
     }
 
-    el = document.getElementById("lg-autoplay")
+    el = document.getElementById("lg-counter")
     console.log('el', el)
     el.onclick = function() {
-      play(1)
+      play(2)
     }
 
 
@@ -413,14 +429,21 @@ document.addEventListener('keydown', function(e){
     play(1)
 
     e.preventDefault();
-    return false;
+    return false
   }
 
   if(e.keyCode == 79 ){
     play(0)
 
     e.preventDefault();
-    return false;
+    return false
+  }
+
+  if(e.keyCode == 78 ){
+    play(2)
+
+    e.preventDefault();
+    return false
   }
 
 })
