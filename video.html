@@ -287,6 +287,7 @@
 
 
         createGallery(el)
+        addEvents()
 
       }, 500)
 
@@ -382,34 +383,36 @@
 
   }
 
+  function addEvents() {
+    var els = document.getElementsByClassName("pl")
+    console.log('els', els)
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i]
+      el.onclick = function() {
+        play(0)
+      }
+    }
+
+    var els = document.getElementsByClassName("lg-next")
+    console.log('els', els)
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i]
+      el.onclick = function() {
+        play(1)
+      }
+    }
+
+    el = document.getElementById("lg-counter")
+    console.log('el', el)
+    el.onclick = function() {
+      play(2)
+    }
+  }
 
   $(function() {
     setTimeout(function() {
 
-      var els = document.getElementsByClassName("pl")
-      console.log('els', els)
-      for (var i = 0; i < els.length; i++) {
-        var el = els[i]
-        el.onclick = function() {
-          play(0)
-        }
-      }
-
-      var els = document.getElementsByClassName("lg-next")
-      console.log('els', els)
-      for (var i = 0; i < els.length; i++) {
-        var el = els[i]
-        el.onclick = function() {
-          play(1)
-        }
-      }
-
-      el = document.getElementById("lg-counter")
-      console.log('el', el)
-      el.onclick = function() {
-        play(2)
-      }
-
+      addEvents()
 
     }, 1000)
   })
