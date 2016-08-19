@@ -20,7 +20,7 @@
 </head>
 <body>
 
-  <div id="aniimated-thumbnials">
+  <div id="animated-thumbnails">
     <div id="vid"></div>
   </div>
 
@@ -47,14 +47,12 @@
   var playlist = getParam('playlist')
 
   var slides = []
-  var el = document.getElementById('aniimated-thumbnials')
+  var el = document.getElementById('animated-thumbnails')
   var files = []
 
-  /**
-  * creates slides
-  * @return {[type]} [description]
-  */
-  function create() {
+
+
+  function filesToSlides(files, slides) {
 
     for (var i = 0; i < files.length; i++) {
       var file = files[i]
@@ -74,6 +72,11 @@
       slides.push(slide)
     }
 
+  }
+
+
+  function createGallery(el) {
+
     lightGallery(el, {
       thumbnail:true,
 
@@ -85,86 +88,7 @@
 
     })
 
-    $().removeClass( "lg-video" )
-
   }
-
-  /**
-  * Refresh slides
-  */
-  function refresh() {
-
-    var el = document.getElementById('aniimated-thumbnials');
-    window.lgData[el.getAttribute('lg-uid')].destroy(true)
-    slides = []
-    files = []
-    g = $rdf.graph();
-    f = $rdf.fetcher(g);
-
-
-    f.requestURI(fetchURI , undefined, true, function(ok, body) {
-      var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(fetchURI))
-      console.log(arr)
-      for (var i = 0; i < arr.length; i++) {
-        var file = arr[i]
-        var subject = file.subject
-        var mtime = g.any(file.object, $rdf.sym("http://www.w3.org/ns/posix/stat#mtime"))
-        console.log(mtime.value)
-        var type = getType(file.object.uri)
-        files.push({ "uri" : file.object.uri, "mtime" : mtime.value, "type" : type })
-      }
-      files = files.sort(function(a,b) {
-        if (a.type === b.type) {
-          return parseFloat(b.mtime) - parseFloat(a.mtime)
-        } else {
-          var order = [1,0,2]
-          return order[a.type] - order[b.type]
-        }
-      })
-
-
-      setTimeout(function() {
-
-        for (var i = 0; i < files.length; i++) {
-          var file = files[i]
-          var thumb = file.uri.replace('/video/', '/thumbnail/') + '.png'
-          var slide = {
-            href: file.uri + '?' + new Date().getTime(),
-            "thumb": thumb + '?' + new Date().getTime(),
-            subHtml: '<span class="pl">Playlist</span> item : <a href="#" onclick="play()">' + ( i + 1 ) + '</a>' ,
-            videoAutoplay: false,
-            vimeoPlayerParams: { autoplay: 0 },
-            youtubePlayerParams: { autoplay: 0 },
-            autoplay: false,
-            autoplayControls: true,
-            html: '<video class="lg-video-object lg-youtube lg-object" id="v' + i + '" controls> <source src="' + file.uri + '?' + new Date().getTime() + '" ></video>'
-
-          }
-          slides.push(slide)
-        }
-
-        lightGallery(el, {
-          thumbnail:true,
-
-          dynamic: true,
-          dynamicEl: slides,
-          videoAutoplay: false,
-          autoplay: false,
-          autoplayControls: true
-
-        })
-
-      }, 500)
-
-
-    })
-
-
-
-    //location.reload()
-
-  }
-
 
   $scope = {}
 
@@ -264,214 +188,259 @@
 
 
 
-  // main
-  console.log('loading container', container)
-  g = $rdf.graph();
-  f = $rdf.fetcher(g);
+  /**
+  * creates slides
+  * @return {[type]} [description]
+  */
+  function create() {
 
-  var fetchURI = playlist || container
+    var fetchURI = playlist || container
 
-  f.requestURI(fetchURI , undefined, true, function(ok, body) {
-    var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(fetchURI))
-    console.log(arr)
-    for (var i = 0; i < arr.length; i++) {
-      var file = arr[i]
-      var subject = file.subject
-      var mtime = g.any(file.object, $rdf.sym("http://www.w3.org/ns/posix/stat#mtime"))
-      console.log(mtime.value)
-      var type = getType(file.object.uri)
-      files.push({ "uri" : file.object.uri, "mtime" : mtime.value, "type" : type })
-    }
-    files = files.sort(function(a,b) {
-      if (a.type === b.type) {
-        return parseFloat(b.mtime) - parseFloat(a.mtime)
-      } else {
-        var order = [1,0,2]
-        return order[a.type] - order[b.type]
+    var el = document.getElementById('animated-thumbnails');
+    slides = []
+    files = []
+    g = $rdf.graph();
+    f = $rdf.fetcher(g);
+
+    f.requestURI(fetchURI , undefined, true, function(ok, body) {
+      var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(fetchURI))
+      console.log(arr)
+      for (var i = 0; i < arr.length; i++) {
+        var file = arr[i]
+        var subject = file.subject
+        var mtime = g.any(file.object, $rdf.sym("http://www.w3.org/ns/posix/stat#mtime"))
+        console.log(mtime.value)
+        var type = getType(file.object.uri)
+        files.push({ "uri" : file.object.uri, "mtime" : mtime.value, "type" : type })
       }
+      files = files.sort(function(a,b) {
+        if (a.type === b.type) {
+          return parseFloat(b.mtime) - parseFloat(a.mtime)
+        } else {
+          var order = [1,0,2]
+          return order[a.type] - order[b.type]
+        }
+      })
+      filesToSlides(files, slides)
+
+      createGallery(el)
+
     })
-    create()
+
+  }
+
+  //main
+  var doRefresh = false
+  create()
+
+  /**
+  * Refresh slides
+  */
+  function refresh() {
+
+    var isPlaying = false
+    for (var i = 0; i < slides.length; i++) {
+      var slide = slides[i]
+      var id = 'v' + i
+      var vid = document.getElementById(id)
+      console.log(id, vid)
+      if (vid && ! vid.paused) {
+        isPlaying = true
+        doRefresh = true
+        return
+      }
+    }
+
+    var el = document.getElementById('animated-thumbnails');
+    window.lgData[el.getAttribute('lg-uid')].destroy(true)
+
+    var fetchURI = playlist || container
+    slides = []
+    files = []
+    g = $rdf.graph();
+    f = $rdf.fetcher(g);
+
+
+    f.requestURI(fetchURI , undefined, true, function(ok, body) {
+      var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(fetchURI))
+      console.log(arr)
+      for (var i = 0; i < arr.length; i++) {
+        var file = arr[i]
+        var subject = file.subject
+        var mtime = g.any(file.object, $rdf.sym("http://www.w3.org/ns/posix/stat#mtime"))
+        console.log(mtime.value)
+        var type = getType(file.object.uri)
+        files.push({ "uri" : file.object.uri, "mtime" : mtime.value, "type" : type })
+      }
+      files = files.sort(function(a,b) {
+        if (a.type === b.type) {
+          return parseFloat(b.mtime) - parseFloat(a.mtime)
+        } else {
+          var order = [1,0,2]
+          return order[a.type] - order[b.type]
+        }
+      })
+      filesToSlides(files, slides)
+
+
+      setTimeout(function() {
+
+
+        createGallery(el)
+
+      }, 500)
+
+
+    })
+
+
+
+    //location.reload()
+
+  }
+
+
+  function putFile(file, data) {
+    xhr = new XMLHttpRequest();
+    xhr.open('PUT', file, false);
+    xhr.setRequestHeader('Content-Type', 'text/turtle; charset=UTF-8');
+    xhr.send(data);
+  }
+
+  var hook = getParam('hook')
+
+  function put(name) {
+    putFile(hook + name, '')
+  }
+
+  function getCurrentVideo(type) {
+    for (var i = 0; i < slides.length; i++) {
+      var slide = slides[i]
+      var href = slide.href
+      if (getType(href) === type) {
+        return i
+      }
+    }
+  }
+
+
+  function play(type) {
+    if (type === undefined) {
+      type = 1
+    }
+    doRefresh = false
+
+    var i = getCurrentVideo(type)
+
+
+
+    var el = document.getElementById('animated-thumbnails');
+    window.lgData[el.getAttribute('lg-uid')].slide(i)
+
+    setTimeout(function() {
+      var id = 'v' + i
+      var el = document.getElementById(id)
+      console.log(i, id, el)
+
+      el.play()
+      rfs =
+      el.requestFullScreen
+      || el.webkitRequestFullScreen
+      || el.mozRequestFullScreen
+      rfs.call(el);
+
+      if (hook) {
+        if (type === 1) {
+          put(100)
+        }
+        if (type === 0) {
+          put(111)
+        }
+        if (type === 2) {
+          put(113)
+        }
+      }
+
+
+      el.onended = function(e) {
+        console.log(e)
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+        if (doRefresh) {
+          refresh()
+        }
+      }
+    }, 700)
+
+
+  }
+
+
+  $(function() {
+    setTimeout(function() {
+
+      var els = document.getElementsByClassName("pl")
+      console.log('els', els)
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i]
+        el.onclick = function() {
+          play(0)
+        }
+      }
+
+      var els = document.getElementsByClassName("lg-next")
+      console.log('els', els)
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i]
+        el.onclick = function() {
+          play(1)
+        }
+      }
+
+      el = document.getElementById("lg-counter")
+      console.log('el', el)
+      el.onclick = function() {
+        play(2)
+      }
+
+
+    }, 1000)
+  })
+
+
+
+  document.addEventListener('keydown', function(e){
+
+    if(e.keyCode == 80 ){
+      play(1)
+
+      e.preventDefault();
+      return false
+    }
+
+    if(e.keyCode == 79 ){
+      play(0)
+
+      e.preventDefault();
+      return false
+    }
+
+    if(e.keyCode == 78 ){
+      play(2)
+
+      e.preventDefault();
+      return false
+    }
 
   })
-  /*
 
-  if (playlist) {
-
-
-  f.nowOrWhenFetched(playlist , undefined, function(ok, body) {
-  var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(playlist))
-  console.log(arr)
-  for (var i = 0; i < arr.length; i++) {
-  var file = arr[i]
-  files.push(file.object.uri)
-}
-files = files.sort()
-create()
-
-})
-
-
-} else {
-
-
-f.nowOrWhenFetched( container , undefined, function(ok, body) {
-var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(container))
-console.log(arr)
-for (var i = 0; i < arr.length; i++) {
-var file = arr[i]
-files.push(file.object.uri)
-}
-files = files.sort()
-create()
-
-})
-
-}
-*/
-
-function putFile(file, data) {
-  xhr = new XMLHttpRequest();
-  xhr.open('PUT', file, false);
-  xhr.setRequestHeader('Content-Type', 'text/turtle; charset=UTF-8');
-  xhr.send(data);
-}
-
-var hook = getParam('hook')
-
-function put(name) {
-  putFile(hook + name, '')
-}
-
-
-function play(type) {
-  if (type === undefined) {
-    type = 1
-  }
-  /*
-  var sources =  document.getElementsByTagName("source")
-  for (var i = 0; i < sources.length; i++) {
-  var source = sources[i].src
-  if (getType(source) === type) {
-  break
-}
-}
-*/
-var sources =  document.getElementsByTagName("source")
-for (var i = 0; i < slides.length; i++) {
-  var slide = slides[i]
-  var href = slide.href
-  if (getType(href) === type) {
-    break
-  }
-}
-
-
-var el = document.getElementById('aniimated-thumbnials');
-window.lgData[el.getAttribute('lg-uid')].slide(i)
-
-setTimeout(function() {
-  var id = 'v' + i
-  var el = document.getElementById(id)
-  console.log(i, id, el)
-
-  el.play()
-  rfs =
-  el.requestFullScreen
-  || el.webkitRequestFullScreen
-  || el.mozRequestFullScreen
-  rfs.call(el);
-
-  el.onended = function(e) {
-    console.log(e)
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    } else if (document.msExitFullscreen) {
-      document.msExitFullscreen();
-    } else if (document.mozCancelFullScreen) {
-      document.mozCancelFullScreen();
-    } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
-    }
-    if (hook) {
-      if (type === 1) {
-        put(100)
-      }
-      if (type === 0) {
-        put(111)
-      }
-      if (type === 2) {
-        put(113)
-      }
-    }
-  }
-}, 700)
-
-
-}
-
-
-$(function() {
-  setTimeout(function() {
-
-    var els = document.getElementsByClassName("pl")
-    console.log('els', els)
-    for (var i = 0; i < els.length; i++) {
-      var el = els[i]
-      el.onclick = function() {
-        play(0)
-      }
-    }
-
-    var els = document.getElementsByClassName("lg-next")
-    console.log('els', els)
-    for (var i = 0; i < els.length; i++) {
-      var el = els[i]
-      el.onclick = function() {
-        play(1)
-      }
-    }
-
-    el = document.getElementById("lg-counter")
-    console.log('el', el)
-    el.onclick = function() {
-      play(2)
-    }
-
-
-  }, 1000)
-})
-
-
-
-document.addEventListener('keydown', function(e){
-
-  if(e.keyCode == 80 ){
-    play(1)
-
-    e.preventDefault();
-    return false
-  }
-
-  if(e.keyCode == 79 ){
-    play(0)
-
-    e.preventDefault();
-    return false
-  }
-
-  if(e.keyCode == 78 ){
-    play(2)
-
-    e.preventDefault();
-    return false
-  }
-
-})
-
-
-
-
-
-</script>
+  </script>
 </body>
 <html>
