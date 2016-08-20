@@ -251,8 +251,11 @@
       }
     }
 
-    var el = document.getElementById('animated-thumbnails');
-    window.lgData[el.getAttribute('lg-uid')].destroy(true)
+    var el = document.getElementById('animated-thumbnails')
+    var slideshow = window.lgData[el.getAttribute('lg-uid')]
+    if (slideshow) {
+      slideshow.destroy(true)
+    }
 
     var fetchURI = playlist || container
     slides = []
@@ -414,7 +417,7 @@
 
       addEvents()
 
-    }, 1000)
+    }, 2000)
   })
 
 
