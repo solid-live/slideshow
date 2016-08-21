@@ -45,6 +45,7 @@
   var container = getParam('container') || 'https://melvin.databox.me/imagelist/'
   var wss = getParam('wss') || container
   var playlist = getParam('playlist')
+  var tag = getParam('tag')
 
   var slides = []
   var el = document.getElementById('animated-thumbnails')
@@ -185,6 +186,7 @@
   }
 
   connectToSocket(wss)
+  var fetchURI
 
 
 
@@ -194,7 +196,7 @@
   */
   function create() {
 
-    var fetchURI = playlist || container
+    fetchURI = playlist || container
 
     var el = document.getElementById('animated-thumbnails');
     slides = []
@@ -209,7 +211,7 @@
         var file = arr[i]
         var subject = file.subject
         var mtime = g.any(file.object, $rdf.sym("http://www.w3.org/ns/posix/stat#mtime"))
-        console.log(mtime.value)
+        //console.log(mtime.value)
         var type = getType(file.object.uri)
         files.push({ "uri" : file.object.uri, "mtime" : mtime.value, "type" : type })
       }
@@ -243,7 +245,7 @@
       var slide = slides[i]
       var id = 'v' + i
       var vid = document.getElementById(id)
-      console.log(id, vid)
+      //console.log(id, vid)
       if (vid && ! vid.paused) {
         isPlaying = true
         doRefresh = true
@@ -271,7 +273,7 @@
         var file = arr[i]
         var subject = file.subject
         var mtime = g.any(file.object, $rdf.sym("http://www.w3.org/ns/posix/stat#mtime"))
-        console.log(mtime.value)
+        //console.log(mtime.value)
         var type = getType(file.object.uri)
         files.push({ "uri" : file.object.uri, "mtime" : mtime.value, "type" : type })
       }
@@ -305,6 +307,7 @@
 
 
   function putFile(file, data) {
+    console.log(file, data)
     xhr = new XMLHttpRequest();
     xhr.open('PUT', file, false);
     xhr.setRequestHeader('Content-Type', 'text/turtle; charset=UTF-8');
@@ -313,8 +316,8 @@
 
   var hook = getParam('hook')
 
-  function put(name) {
-    putFile(hook + name, '')
+  function put(name, data) {
+    putFile(hook + name, data)
   }
 
   function getCurrentVideo(type) {
@@ -327,6 +330,13 @@
     }
   }
 
+  function toTurtle(fetchURI, tag) {
+    var turtle = '<> <urn:string:playlist> <' + fetchURI + '> .\n'
+    if (tag) {
+      turtle += '<> <urn:string:tag> "' + tag + '" .\n'
+    }
+    return turtle
+  }
 
   function play(type) {
     if (type === undefined) {
@@ -344,7 +354,7 @@
     setTimeout(function() {
       var id = 'v' + i
       var el = document.getElementById(id)
-      console.log(i, id, el)
+      //console.log(i, id, el)
 
       el.play()
       rfs =
@@ -353,15 +363,16 @@
       || el.mozRequestFullScreen
       rfs.call(el);
 
+      var turtle = toTurtle(fetchURI, tag)
       if (hook) {
         if (type === 1) {
-          put(100)
+          put(100, turtle)
         }
         if (type === 0) {
-          put(111)
+          put(111, turtle)
         }
         if (type === 2) {
-          put(113)
+          put(113, turtle)
         }
       }
 
