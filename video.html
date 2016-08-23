@@ -41,17 +41,19 @@
     }
   }
 
+  // defaults
+  var defaultContainer = 'https://melvin.databox.me/imagelist/'
+
   // globals
-  var container = getParam('container') || 'https://melvin.databox.me/imagelist/'
-  var wss = getParam('wss') || container
-  var playlist = getParam('playlist')
-  var tag = getParam('tag')
+  var container = getParam('container') || defaultContainer
+  var playlist  = getParam('playlist')
+  var sort      = getParam('sort')
+  var tag       = getParam('tag')
+  var wss       = getParam('wss') || container
 
-  var slides = []
-  var el = document.getElementById('animated-thumbnails')
-  var files = []
-
-
+  var slides    = []
+  var files     = []
+  var el        = document.getElementById('animated-thumbnails')
 
   function filesToSlides(files, slides) {
 
@@ -406,7 +408,7 @@
     if (slideshow) {
       slideshow.slide(i)
     }
-    
+
 
 
   }

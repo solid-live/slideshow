@@ -20,7 +20,7 @@
 </head>
 <body>
 
-  <div id="aniimated-thumbnials">
+  <div id="animated-thumbnails">
   </div>
 
 <script>
@@ -40,17 +40,20 @@ function getParam(name) {
   }
 }
 
+// defaults
+var defaultContainer = 'https://melvin.databox.me/imagelist/'
+var defaultSort      = 'asc'
 
 // globals
-var container = getParam('container') || 'https://melvin.databox.me/imagelist/'
-var wss = getParam('wss') || container
-var playlist = getParam('playlist')
+var container = getParam('container') || defaultContainer
+var playlist  = getParam('playlist')
+var sort      = getParam('sort')      || defaultSort
+var tag       = getParam('tag')
+var wss       = getParam('wss')       || container
 
-var slides = []
-var el = document.getElementById('aniimated-thumbnials')
-var files = []
-
-
+var slides    = []
+var files     = []
+var el        = document.getElementById('animated-thumbnails')
 
 function create() {
 
@@ -85,7 +88,7 @@ function create() {
 
 function refresh() {
 
-  var el = document.getElementById('aniimated-thumbnials');
+  var el = document.getElementById('animated-thumbnails');
   window.lgData[el.getAttribute('lg-uid')].destroy(true)
 
   setTimeout(function() {
@@ -103,7 +106,7 @@ function refresh() {
     }
 
 
-    lightGallery(document.getElementById('aniimated-thumbnials'), {
+    lightGallery(document.getElementById('animated-thumbnails'), {
         thumbnail:true,
 
         dynamic: true,
@@ -220,7 +223,11 @@ if (playlist) {
       files.push({ "uri" : file.object.uri, "mtime" : mtime.value })
     }
     files = files.sort(function(a,b) {
-      return parseFloat(a.mtime) - parseFloat(b.mtime)
+      if (sort === 'asc') {
+        return parseFloat(a.mtime) - parseFloat(b.mtime)
+      } else {
+        return parseFloat(b.mtime) - parseFloat(a.mtime)
+      }
     })
     create()
 
