@@ -335,6 +335,13 @@
     if (tag) {
       turtle += '<> <urn:string:tag> "' + tag + '" .\n'
     }
+    var preds = g.statementsMatching(undefined, $rdf.sym("http://www.w3.org/2007/ont/httph#user"), null)
+    if (preds && preds[0] && preds[0].object && preds[0].object.value) {
+      user = preds[0].object.value
+    }
+    if (user) {
+      turtle += '<> <urn:string:webid> <' + user + '> .\n'
+    }
     return turtle
   }
 
