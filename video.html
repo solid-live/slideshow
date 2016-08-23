@@ -355,20 +355,43 @@
 
 
 
-    var el = document.getElementById('animated-thumbnails');
-    window.lgData[el.getAttribute('lg-uid')].slide(i)
+    var el = document.getElementById('animated-thumbnails')
+    var slideshow = window.lgData[el.getAttribute('lg-uid')]
+    if (slideshow) {
+      slideshow.slide(i)
+    }
+
 
     setTimeout(function() {
       var id = 'v' + i
       var el = document.getElementById(id)
       //console.log(i, id, el)
 
-      el.play()
-      rfs =
-      el.requestFullScreen
-      || el.webkitRequestFullScreen
-      || el.mozRequestFullScreen
-      rfs.call(el);
+      if (el && el.play) {
+        el.play()
+        rfs =
+        el.requestFullScreen
+        || el.webkitRequestFullScreen
+        || el.mozRequestFullScreen
+        rfs.call(el);
+
+        el.onended = function(e) {
+          console.log(e)
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+          } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
+          if (doRefresh) {
+            refresh()
+          }
+        }
+
+      }
 
       var turtle = toTurtle(fetchURI, tag)
       if (hook) {
@@ -384,21 +407,6 @@
       }
 
 
-      el.onended = function(e) {
-        console.log(e)
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.msExitFullscreen) {
-          document.msExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        }
-        if (doRefresh) {
-          refresh()
-        }
-      }
     }, 700)
 
 
