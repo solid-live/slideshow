@@ -354,14 +354,6 @@
     var i = getCurrentVideo(type)
 
 
-
-    var el = document.getElementById('animated-thumbnails')
-    var slideshow = window.lgData[el.getAttribute('lg-uid')]
-    if (slideshow) {
-      slideshow.slide(i)
-    }
-
-
     setTimeout(function() {
       var id = 'v' + i
       var el = document.getElementById(id)
@@ -408,6 +400,13 @@
 
 
     }, 700)
+
+    var el = document.getElementById('animated-thumbnails')
+    var slideshow = window.lgData[el.getAttribute('lg-uid')]
+    if (slideshow) {
+      slideshow.slide(i)
+    }
+    
 
 
   }
