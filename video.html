@@ -412,6 +412,13 @@
 
   }
 
+  function rate(rating) {
+    var turtle = toTurtle(fetchURI)
+    if (hook) {
+      put(rating, turtle)
+    }
+  }
+
   function addEvents() {
     var els = document.getElementsByClassName("pl")
     console.log('els', els)
@@ -450,26 +457,100 @@
 
   document.addEventListener('keydown', function(e){
 
-    if(e.keyCode == 80 ){
+    console.log(e.keyCode)
+
+    if(e.keyCode === 80 || e.keyCode === 45 ){
       play(1)
 
       e.preventDefault();
       return false
     }
 
-    if(e.keyCode == 79 ){
+    if(e.keyCode === 79 || e.keyCode === 46 ){
       play(0)
 
       e.preventDefault();
       return false
     }
 
-    if(e.keyCode == 78 ){
+    if(e.keyCode === 78 || e.keyCode === 13 ){
       play(2)
 
       e.preventDefault();
       return false
     }
+
+    if(e.keyCode === 49 ){
+      rate(1)
+
+      e.preventDefault();
+      return false
+    }
+
+    if(e.keyCode === 50 ){
+      rate(2)
+
+      e.preventDefault();
+      return false
+    }
+
+    if(e.keyCode === 51 ){
+      rate(3)
+
+      e.preventDefault();
+      return false
+    }
+
+    if(e.keyCode === 52 ){
+      rate(4)
+
+      e.preventDefault();
+      return false
+    }
+
+    if(e.keyCode === 53 ){
+      rate(5)
+
+      e.preventDefault();
+      return false
+    }
+
+    if(e.keyCode === 54 ){
+      rate(6)
+
+      e.preventDefault();
+      return false
+    }
+
+    if(e.keyCode === 55 ){
+      rate(7)
+
+      e.preventDefault();
+      return false
+    }
+
+    if(e.keyCode === 56 ){
+      rate(8)
+
+      e.preventDefault();
+      return false
+    }
+
+    if(e.keyCode === 57 ){
+      rate(9)
+
+      e.preventDefault();
+      return false
+    }
+
+    if(e.keyCode === 48 ){
+      rate(10)
+
+      e.preventDefault();
+      return false
+    }
+
+
 
   })
 
