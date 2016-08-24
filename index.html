@@ -58,10 +58,12 @@ var el        = document.getElementById('animated-thumbnails')
 function create() {
 
   for (var i = 0; i < files.length; i++) {
+    var file  = files[i]
+    var title = file.title || 'Playlist'
     var slide = {
       src: files[i].uri + '?' + new Date().getTime(),
       thumb: files[i].uri + '?' + new Date().getTime(),
-      subHtml: 'Playlist item : ' + ( i + 1 ),
+      subHtml: '' + title + ' item : ' + ( i + 1 ),
       videoAutoplay: false,
       vimeoPlayerParams: { autoplay: 0 },
       youtubePlayerParams: { autoplay: 0 },
@@ -216,11 +218,16 @@ if (playlist) {
     console.log(arr)
     for (var i = 0; i < arr.length; i++) {
       var file = arr[i]
-      var subject = file.subject
+      var object = file.object
       var mtime = g.any(file.object, $rdf.sym("http://www.w3.org/ns/posix/stat#mtime"))
-      console.log(file.object)
-      console.log(mtime.value)
-      files.push({ "uri" : file.object.uri, "mtime" : mtime.value })
+      mtime = mtime ? mtime.value : null
+      var title = g.any(file.object, $rdf.sym("http://purl.org/dc/terms/title"))
+      title = title ? title.value : null
+      var o = { "uri" : file.object.uri, "mtime" : mtime, "title" : title }
+      console.log(o)
+
+      files.push(o)
+
     }
     files = files.sort(function(a,b) {
       if (sort === 'asc') {
