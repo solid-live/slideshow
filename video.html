@@ -39,6 +39,26 @@
     }
   }
 
+
+  /**
+   * Get the value or uri from an object
+   * @param  {object} g And rdflib graph object
+   * @param  {string} s And rdflib subject
+   * @param  {string} p Predicate as a string
+   * @return {string}   The value of the object or null
+   */
+  function anyObj(g, s, p) {
+    var obj
+    obj = g.any(s, $rdf.sym(p))
+    if (obj && obj.value) {
+      return obj.value
+    }
+    if (obj && obj.uri) {
+      return obj.uri
+    }
+  }
+
+
   // defaults
   var defaultContainer = 'https://melvin.databox.me/imagelist/'
 
@@ -207,10 +227,12 @@
       for (var i = 0; i < arr.length; i++) {
         var file = arr[i]
         var subject = file.subject
-        var mtime = g.any(file.object, $rdf.sym("http://www.w3.org/ns/posix/stat#mtime"))
-        mtime = mtime ? mtime.value : null
-        var title = g.any(file.object, $rdf.sym("http://purl.org/dc/terms/title"))
-        title = title ? title.value : null
+        var mtime = anyObj(g, file.object, 'http://www.w3.org/ns/posix/stat#mtime')
+        var title = anyObj(g, file.object, 'http://purl.org/dc/terms/title')
+        //var mtime = g.any(file.object, $rdf.sym("http://www.w3.org/ns/posix/stat#mtime"))
+        //mtime = mtime ? mtime.value : null
+        //var title = g.any(file.object, $rdf.sym("http://purl.org/dc/terms/title"))
+        //title = title ? title.value : null
 
         var type = getType(file.object.uri)
         files.push({ "uri" : file.object.uri, "mtime" : mtime, "type" : type, "title" : title })
@@ -271,10 +293,12 @@
       for (var i = 0; i < arr.length; i++) {
         var file = arr[i]
         var subject = file.subject
-        var mtime = g.any(file.object, $rdf.sym("http://www.w3.org/ns/posix/stat#mtime"))
-        mtime = mtime ? mtime.value : null
-        var title = g.any(file.object, $rdf.sym("http://purl.org/dc/terms/title"))
-        title = title ? title.value : null
+        var mtime = anyObj(g, file.object, 'http://www.w3.org/ns/posix/stat#mtime')
+        var title = anyObj(g, file.object, 'http://purl.org/dc/terms/title')
+        //var mtime = g.any(file.object, $rdf.sym("http://www.w3.org/ns/posix/stat#mtime"))
+        //mtime = mtime ? mtime.value : null
+        //var title = g.any(file.object, $rdf.sym("http://purl.org/dc/terms/title"))
+        //title = title ? title.value : null
 
         var type = getType(file.object.uri)
         files.push({ "uri" : file.object.uri, "mtime" : mtime.value, "type" : type, "title" : title })
