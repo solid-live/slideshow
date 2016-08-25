@@ -237,9 +237,8 @@ if (playlist) {
     console.log(arr)
     for (var i = 0; i < arr.length; i++) {
       var file = arr[i]
-      var object = file.object
       var subject = file.subject
-      if (!playlist && subject && subject.uri && /.ttl$/.test(subject.uri) ) {
+      if (file.object && file.object.uri && /.ttl$/.test(file.object.uri) ) {
         continue
       }
       var mtime = anyObj(g, file.object, 'http://www.w3.org/ns/posix/stat#mtime')
