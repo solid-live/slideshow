@@ -303,7 +303,7 @@
         var title = anyObj(g, file.object, 'http://purl.org/dc/terms/title')
 
         var type = getType(file.object.uri)
-        files.push({ "uri" : file.object.uri, "mtime" : mtime.value, "type" : type, "title" : title })
+        files.push({ "uri" : file.object.uri, "mtime" : mtime, "type" : type, "title" : title })
       }
       files = files.sort(function(a,b) {
         if (a.type === b.type) {
