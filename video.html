@@ -109,6 +109,9 @@
       autoplayControls: true
 
     })
+    if (bg) {
+      $('.lg-backdrop').css('background-color', bg)
+    }
 
   }
 
@@ -472,6 +475,11 @@
     el.onclick = function() {
       play(2)
     }
+
+    if (bg) {
+      $('.lg-backdrop').css('background-color', bg)
+    }
+
   }
 
   $(function() {
