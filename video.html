@@ -63,8 +63,10 @@
   var defaultContainer = 'https://melvin.databox.me/imagelist/'
 
   // globals
+  var bg        = getParam('bg')
   var container = getParam('container') || defaultContainer
   var playlist  = getParam('playlist')
+  var safe      = getParam('safe')
   var sort      = getParam('sort')
   var tag       = getParam('tag')
   var wss       = getParam('wss') || container
@@ -329,6 +331,11 @@
 
   }
 
+  /**
+   * put a file with turtle data
+   * @param  {string} file The URI to put
+   * @param  {string} data The data to put in turtle
+   */
   function putFile(file, data) {
     console.log(file, data)
     xhr = new XMLHttpRequest()
@@ -364,6 +371,9 @@
     }
     if (user) {
       turtle += '<> <urn:string:webid> <' + user + '> .\n'
+    }
+    if (safe) {
+      turtle += '<> <urn:string:safe> <' + safe + '> .\n'
     }
     return turtle
   }
@@ -468,6 +478,9 @@
     setTimeout(function() {
 
       addEvents()
+      if (bg) {
+        $('.lg-backdrop').css('background-color', bg)
+      }
 
     }, 2000)
   })
