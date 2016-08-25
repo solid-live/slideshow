@@ -238,6 +238,10 @@ if (playlist) {
     for (var i = 0; i < arr.length; i++) {
       var file = arr[i]
       var object = file.object
+      var subject = file.subject
+      if (!playlist && subject && subject.uri && /.ttl$/.test(subject.uri) ) {
+        continue
+      }
       var mtime = anyObj(g, file.object, 'http://www.w3.org/ns/posix/stat#mtime')
       var title = anyObj(g, file.object, 'http://purl.org/dc/terms/title')
       var o = { "uri" : file.object.uri, "mtime" : mtime, "title" : title }
