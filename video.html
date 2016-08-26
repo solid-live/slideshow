@@ -106,7 +106,7 @@
           youtubePlayerParams: { autoplay: 0 },
           autoplay: false,
           autoplayControls: true
-        }        
+        }
       }
       slides.push(slide)
     }
@@ -230,6 +230,13 @@
   function create() {
 
     fetchURI = playlist || container
+    if (playlist) {
+      fetchURI = playlist
+      sort = sort || 'asc'
+    } else {
+      sort = sort || 'desc'
+      fetchURI = container
+    }
 
     var el = document.getElementById('animated-thumbnails')
     slides = []
@@ -241,9 +248,6 @@
 
   }
 
-  //main
-  connectToSocket(wss)
-  create()
 
   /**
   * Refresh slides
@@ -297,7 +301,11 @@
     }
     files = files.sort(function(a,b) {
       if (a.type === b.type) {
-        return parseFloat(b.mtime) - parseFloat(a.mtime)
+        if (sort === 'desc') {
+          return parseFloat(b.mtime) - parseFloat(a.mtime)
+        } else {
+          return parseFloat(a.mtime) - parseFloat(b.mtime)          
+        }
       } else {
         var order = [1,0,2]
         return order[b.type] - order[a.type]
@@ -569,6 +577,11 @@
     }
 
   })
+
+  //main
+  connectToSocket(wss)
+  create()
+
 
   </script>
 </body>
