@@ -73,6 +73,8 @@ var wss       = getParam('wss')       || container
 var slides    = []
 var files     = []
 var el        = document.getElementById('animated-thumbnails')
+$scope        = {}
+
 
 function create() {
 
@@ -194,7 +196,6 @@ function refresh() {
 //window.lgData[0].slide(2);
 
 
-$scope = {}
 
 /**
  * Get wss from URI

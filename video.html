@@ -39,7 +39,6 @@
     }
   }
 
-
   /**
    * Get the value or uri from an object
    * @param  {object} g And rdflib graph object
@@ -58,7 +57,6 @@
     }
   }
 
-
   // defaults
   var defaultContainer = 'https://melvin.databox.me/imagelist/'
 
@@ -74,24 +72,41 @@
   var slides    = []
   var files     = []
   var el        = document.getElementById('animated-thumbnails')
+  $scope        = {}
+  var doRefresh = false
+  var fetchURI
 
   function filesToSlides(files, slides) {
 
     for (var i = 0; i < files.length; i++) {
       var file = files[i]
-      var thumb = file.uri.replace('/video/', '/thumbnail/') + '.png'
-      var title = file.title || 'Playlist'
-      var slide = {
-        href: file.uri + '?' + new Date().getTime(),
-        "thumb": thumb + '?' + new Date().getTime(),
-        subHtml: '<span class="pl">' + title + '</span> item : <a href="#" onclick="play()">' + ( i + 1 ) + '</a>' ,
-        videoAutoplay: false,
-        vimeoPlayerParams: { autoplay: 0 },
-        youtubePlayerParams: { autoplay: 0 },
-        autoplay: false,
-        autoplayControls: true,
-        html: '<video class="lg-video-object lg-youtube lg-object" id="v' + i + '" controls> <source src="' + file.uri + '?' + new Date().getTime() + '" ></video>'
-
+      if (/.mp4$/.test(file.uri)) {
+        var thumb = file.uri.replace('/video/', '/thumbnail/') + '.png'
+        var title = file.title || 'Playlist'
+        var slide = {
+          href: file.uri + '?' + new Date().getTime(),
+          "thumb": thumb + '?' + new Date().getTime(),
+          subHtml: '<span class="pl">' + title + '</span> item : <a href="#" onclick="play()">' + ( i + 1 ) + '</a>' ,
+          videoAutoplay: false,
+          vimeoPlayerParams: { autoplay: 0 },
+          youtubePlayerParams: { autoplay: 0 },
+          autoplay: false,
+          autoplayControls: true,
+          html: '<video class="lg-video-object lg-youtube lg-object" id="v' + i + '" controls> <source src="' + file.uri + '?' + new Date().getTime() + '" ></video>'
+        }
+      } else {
+        var file  = files[i]
+        var title = file.title || 'Playlist'
+        var slide = {
+          src: files[i].uri + '?' + new Date().getTime(),
+          thumb: files[i].uri + '?' + new Date().getTime(),
+          subHtml: '' + title + ' item : ' + ( i + 1 ),
+          videoAutoplay: false,
+          vimeoPlayerParams: { autoplay: 0 },
+          youtubePlayerParams: { autoplay: 0 },
+          autoplay: false,
+          autoplayControls: true
+        }        
       }
       slides.push(slide)
     }
@@ -114,8 +129,6 @@
     }
 
   }
-
-  $scope = {}
 
   /**
   * Get wss from URI
@@ -209,8 +222,6 @@
     refresh()
   }
 
-  connectToSocket(wss)
-  var fetchURI
 
   /**
   * creates slides
@@ -226,43 +237,12 @@
     g = $rdf.graph()
     f = $rdf.fetcher(g)
 
-    f.requestURI(fetchURI , undefined, true, function(ok, body) {
-      var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(fetchURI))
-      console.log(arr)
-      for (var i = 0; i < arr.length; i++) {
-        var file = arr[i]
-        var subject = file.subject
-        if (file.object && file.object.uri && /.ttl$/.test(file.object.uri) ) {
-          continue
-        }
-        var mtime = anyObj(g, file.object, 'http://www.w3.org/ns/posix/stat#mtime')
-        var title = anyObj(g, file.object, 'http://purl.org/dc/terms/title')
-        //var mtime = g.any(file.object, $rdf.sym("http://www.w3.org/ns/posix/stat#mtime"))
-        //mtime = mtime ? mtime.value : null
-        //var title = g.any(file.object, $rdf.sym("http://purl.org/dc/terms/title"))
-        //title = title ? title.value : null
-
-        var type = getType(file.object.uri)
-        files.push({ "uri" : file.object.uri, "mtime" : mtime, "type" : type, "title" : title })
-      }
-      files = files.sort(function(a,b) {
-        if (a.type === b.type) {
-          return parseFloat(b.mtime) - parseFloat(a.mtime)
-        } else {
-          var order = [1,0,2]
-          return order[a.type] - order[b.type]
-        }
-      })
-      filesToSlides(files, slides)
-
-      createGallery(el)
-
-    })
+    f.requestURI(fetchURI , undefined, true, processGraph)
 
   }
 
   //main
-  var doRefresh = false
+  connectToSocket(wss)
   create()
 
   /**
@@ -295,42 +275,42 @@
     g = $rdf.graph()
     f = $rdf.fetcher(g)
 
-    f.requestURI(fetchURI , undefined, true, function(ok, body) {
-      var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(fetchURI))
-      console.log(arr)
-      for (var i = 0; i < arr.length; i++) {
-        var file = arr[i]
-        var subject = file.subject
-        if (file.object && file.object.uri && /.ttl$/.test(file.object.uri) ) {
-          continue
-        }
-        var mtime = anyObj(g, file.object, 'http://www.w3.org/ns/posix/stat#mtime')
-        var title = anyObj(g, file.object, 'http://purl.org/dc/terms/title')
+    f.requestURI(fetchURI , undefined, true, processGraph)
 
-        var type = getType(file.object.uri)
-        files.push({ "uri" : file.object.uri, "mtime" : mtime, "type" : type, "title" : title })
+  }
+
+  function processGraph(ok, body) {
+
+    var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(fetchURI))
+    console.log(arr)
+    for (var i = 0; i < arr.length; i++) {
+      var file = arr[i]
+      var subject = file.subject
+      if (file.object && file.object.uri && /.ttl$/.test(file.object.uri) ) {
+        continue
       }
-      files = files.sort(function(a,b) {
-        if (a.type === b.type) {
-          return parseFloat(b.mtime) - parseFloat(a.mtime)
-        } else {
-          var order = [1,0,2]
-          return order[b.type] - order[a.type]
-        }
-      })
-      filesToSlides(files, slides)
+      var mtime = anyObj(g, file.object, 'http://www.w3.org/ns/posix/stat#mtime')
+      var title = anyObj(g, file.object, 'http://purl.org/dc/terms/title')
 
-
-      setTimeout(function() {
-
-
-        createGallery(el)
-        setTimeout(addEvents, 1000)
-
-      }, 500)
-
-
+      var type = getType(file.object.uri)
+      files.push({ "uri" : file.object.uri, "mtime" : mtime, "type" : type, "title" : title })
+    }
+    files = files.sort(function(a,b) {
+      if (a.type === b.type) {
+        return parseFloat(b.mtime) - parseFloat(a.mtime)
+      } else {
+        var order = [1,0,2]
+        return order[b.type] - order[a.type]
+      }
     })
+    filesToSlides(files, slides)
+
+    setTimeout(function() {
+
+      createGallery(el)
+      setTimeout(addEvents, 1000)
+
+    }, 500)
 
   }
 
