@@ -61,12 +61,12 @@ function anyObj(g, s, p) {
 
 // defaults
 var defaultContainer = 'https://melvin.databox.me/imagelist/'
-var defaultSort      = 'asc'
+
 
 // globals
 var container = getParam('container') || defaultContainer
 var playlist  = getParam('playlist')
-var sort      = getParam('sort')      || defaultSort
+var sort      = getParam('sort')
 var tag       = getParam('tag')
 var wss       = getParam('wss')       || container
 
@@ -113,32 +113,77 @@ function refresh() {
   window.lgData[el.getAttribute('lg-uid')].destroy(true)
 
   setTimeout(function() {
-    var slides = []
-    for (var i = 0; i < files.length; i++) {
-      var slide = {
-        src: files[i].uri + '?' + new Date().getTime(),
-        thumb: files[i].uri + '?' + new Date().getTime(),
-        subHtml: 'An image number ' + i,
-        videoAutoplay: false,
-        autoplay: false,
-        autoplayControls: true
-      }
-      slides.push(slide)
+    slides = []
+    files  = []
+
+    if (playlist) {
+      sort = sort || 'asc'
+      g = $rdf.graph();
+      f = $rdf.fetcher(g);
+
+      f.requestURI(fetchURI , undefined, true, function(ok, body) {
+        var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(fetchURI))
+        console.log(arr)
+        for (var i = 0; i < arr.length; i++) {
+          var file = arr[i]
+          var subject = file.subject
+          if (file.object && file.object.uri && /.ttl$/.test(file.object.uri) ) {
+            continue
+          }
+          var mtime = anyObj(g, file.object, 'http://www.w3.org/ns/posix/stat#mtime')
+          var title = anyObj(g, file.object, 'http://purl.org/dc/terms/title')
+          var o = { "uri" : file.object.uri, "mtime" : mtime, "title" : title }
+          console.log(o)
+
+          files.push(o)
+
+        }
+        files = files.sort(function(a,b) {
+          if (sort === 'asc') {
+            return parseFloat(a.mtime) - parseFloat(b.mtime)
+          } else {
+            return parseFloat(b.mtime) - parseFloat(a.mtime)
+          }
+        })
+        create()
+
+      })
+
+    } else {
+      sort = sort || 'desc'
+      g = $rdf.graph();
+      f = $rdf.fetcher(g);
+
+      f.requestURI( container , undefined, true, function(ok, body) {
+        var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(container))
+        console.log(arr)
+        for (var i = 0; i < arr.length; i++) {
+          var file = arr[i]
+          var subject = file.subject
+          if (file.object && file.object.uri && /.ttl$/.test(file.object.uri) ) {
+            continue
+          }
+          var mtime = anyObj(g, file.object, 'http://www.w3.org/ns/posix/stat#mtime')
+          var title = anyObj(g, file.object, 'http://purl.org/dc/terms/title')
+          var o = { "uri" : file.object.uri, "mtime" : mtime, "title" : title }
+          console.log(o)
+
+          files.push(o)
+
+        }
+        files = files.sort(function(a,b) {
+          if (sort === 'asc') {
+            return parseFloat(a.mtime) - parseFloat(b.mtime)
+          } else {
+            return parseFloat(b.mtime) - parseFloat(a.mtime)
+          }
+        })
+        create()
+
+      })
+
     }
 
-
-    lightGallery(document.getElementById('animated-thumbnails'), {
-        thumbnail:true,
-
-        dynamic: true,
-        dynamicEl: slides,
-        videoAutoplay: false,
-        vimeoPlayerParams: { autoplay: 0 },
-        youtubePlayerParams: { autoplay: 0 },
-        autoplay: false,
-        autoplayControls: true
-
-    })
 
   }, 500)
 
@@ -225,12 +270,13 @@ connectToSocket(wss)
 
 
 console.log('loading container', container)
-g = $rdf.graph();
-f = $rdf.fetcher(g);
 
 var fetchURI = playlist || container
 
 if (playlist) {
+  sort = sort || 'asc'
+  g = $rdf.graph();
+  f = $rdf.fetcher(g);
 
   f.requestURI(fetchURI , undefined, true, function(ok, body) {
     var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(fetchURI))
@@ -261,14 +307,34 @@ if (playlist) {
   })
 
 } else {
+  sort = sort || 'desc'
+  g = $rdf.graph();
+  f = $rdf.fetcher(g);
 
   f.nowOrWhenFetched( container , undefined, function(ok, body) {
     var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(container))
     console.log(arr)
     for (var i = 0; i < arr.length; i++) {
       var file = arr[i]
-      files.push({ "uri": file.object.uri })
+      var subject = file.subject
+      if (file.object && file.object.uri && /.ttl$/.test(file.object.uri) ) {
+        continue
+      }
+      var mtime = anyObj(g, file.object, 'http://www.w3.org/ns/posix/stat#mtime')
+      var title = anyObj(g, file.object, 'http://purl.org/dc/terms/title')
+      var o = { "uri" : file.object.uri, "mtime" : mtime, "title" : title }
+      console.log(o)
+
+      files.push(o)
+
     }
+    files = files.sort(function(a,b) {
+      if (sort === 'asc') {
+        return parseFloat(a.mtime) - parseFloat(b.mtime)
+      } else {
+        return parseFloat(b.mtime) - parseFloat(a.mtime)
+      }
+    })
     create()
 
   })
