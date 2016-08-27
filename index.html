@@ -442,6 +442,7 @@
       var id = 'v' + i
       var el = document.getElementById(id)
       //console.log(i, id, el)
+      el = document.getElementsByTagName('img')[0]
 
       if (el) {
         rfs =
@@ -463,7 +464,7 @@
           if (doRefresh) {
             refresh()
           }
-        }, 3000)
+        }, 4000)
 
       }
 
