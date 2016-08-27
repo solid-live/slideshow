@@ -432,6 +432,57 @@
 
   }
 
+  function view() {
+    doRefresh = false
+
+    var i = 0
+
+
+    setTimeout(function() {
+      var id = 'v' + i
+      var el = document.getElementById(id)
+      //console.log(i, id, el)
+
+      if (el) {
+        rfs =
+        el.requestFullScreen
+        || el.webkitRequestFullScreen
+        || el.mozRequestFullScreen
+        rfs.call(el)
+
+        setTimeout( function(e) {
+          if (document.exitFullscreen) {
+            document.exitFullscreen()
+          } else if (document.msExitFullscreen) {
+            document.msExitFullscreen()
+          } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen()
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen()
+          }
+          if (doRefresh) {
+            refresh()
+          }
+        }, 3000)
+
+      }
+
+      var turtle = toTurtle(fetchURI)
+      if (hook) {
+        put('112', turtle)
+      }
+
+    }, 700)
+
+    var el = document.getElementById('animated-thumbnails')
+    var slideshow = window.lgData[el.getAttribute('lg-uid')]
+    if (slideshow) {
+      slideshow.slide(i)
+    }
+
+  }
+
+
   function rate(rating) {
     var turtle = toTurtle(fetchURI)
     if (hook) {
@@ -577,7 +628,7 @@
     }
 
     if(e.keyCode === 189 ){
-      rate(12)
+      view(12)
 
       e.preventDefault()
       return false
