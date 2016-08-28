@@ -65,6 +65,20 @@
   }
 
   /**
+   * getInbox
+   * @return {string} inboxURI
+   */
+  function getInbox() {
+    if (inbox) {
+      return inbox
+    }
+    if (container) {
+      var ret = container + '../inbox/'
+      return ret
+    }
+  }
+
+  /**
    * Get the value or uri from an object
    * @param  {object} g And rdflib graph object
    * @param  {string} s And rdflib subject
@@ -678,6 +692,8 @@
   })
 
   //main
+  inbox = inbox || getInbox()
+  console.log('inbox', inbox)
   connectToSocket(wss)
   create()
 
