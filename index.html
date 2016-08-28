@@ -125,7 +125,7 @@
         var slide = {
           src: files[i].uri + '?' + new Date().getTime(),
           thumb: files[i].uri + '?' + new Date().getTime(),
-          subHtml: '' + title + ' item : ' + ( i + 1 ),
+          subHtml: '<span class="sl">' + title + ' item : ' + ( i + 1 ) + '</span>',
           videoAutoplay: false,
           vimeoPlayerParams: { autoplay: 0 },
           youtubePlayerParams: { autoplay: 0 },
@@ -557,6 +557,14 @@
       var el = els[i]
       el.onclick = function() {
         play(1)
+      }
+    }
+
+    var els = document.getElementsByTagName("img")
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i]
+      el.onclick = function() {
+        view(12)
       }
     }
 
