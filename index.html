@@ -27,6 +27,11 @@
   <script>
 
   // utils
+  /**
+   * Get parameters from query string
+   * @param  {string} name Name of parameter
+   * @return {String}      Value of parameter
+   */
   function getParam(name) {
     name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]")
     var regexS = "[\\?&]"+name+"=([^&#]*)"
@@ -76,6 +81,11 @@
   var doRefresh = false
   var fetchURI
 
+  /**
+   * Change files into slides
+   * @param  {array}  files  Array of files
+   * @param  {arrty}  slides Array of slides
+   */
   function filesToSlides(files, slides) {
 
     for (var i = 0; i < files.length; i++) {
@@ -112,11 +122,15 @@
     }
   }
 
+  /**
+   * Creates a light gallery
+   * @param  {object} el The element to use
+   */
   function createGallery(el) {
 
     lightGallery(el, {
-      thumbnail:true,
 
+      thumbnail:true,
       dynamic: true,
       dynamicEl: slides,
       videoAutoplay: false,
@@ -283,6 +297,11 @@
 
   }
 
+  /**
+   * Process a graph and gets playlist material
+   * @param  {number} ok   Return code
+   * @param  {string} body Body of return
+   */
   function processGraph(ok, body) {
 
     var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(fetchURI))
@@ -351,6 +370,12 @@
     }
   }
 
+  /**
+   * Create turtle for inbox post
+   * @param  {string} fetchURI The URI of the playlist
+   * @param  {string} tag      A tag
+   * @return {string}          Turtle to send
+   */
   function toTurtle(fetchURI, tag) {
     var turtle = '<> <urn:string:playlist> <' + fetchURI + '> .\n'
     if (tag) {
@@ -369,6 +394,10 @@
     return turtle
   }
 
+  /**
+   * Play a video
+   * @param  {number} type Type of function
+   */
   function play(type) {
     if (type === undefined) {
       type = 1
@@ -432,6 +461,9 @@
 
   }
 
+  /**
+   * View a slide
+   */
   function view() {
     doRefresh = false
 
@@ -483,7 +515,10 @@
 
   }
 
-
+  /**
+   * Rate a slide
+   * @param  {string} rating The rating file name
+   */
   function rate(rating) {
     var turtle = toTurtle(fetchURI)
     if (hook) {
@@ -491,6 +526,9 @@
     }
   }
 
+  /**
+   * Add events to DOM
+   */
   function addEvents() {
     var els = document.getElementsByClassName("pl")
     console.log('els', els)
@@ -522,6 +560,9 @@
 
   }
 
+  /**
+   * Startup functions
+   */
   $(function() {
     setTimeout(function() {
 
@@ -533,6 +574,7 @@
     }, 2000)
   })
 
+  // Add keystroke events
   document.addEventListener('keydown', function(e){
 
     console.log(e.keyCode)
@@ -628,7 +670,7 @@
       return false
     }
 
-    if(e.keyCode === 187 ){
+    if(e.keyCode === 187   ){
       view(12)
 
       e.preventDefault()
