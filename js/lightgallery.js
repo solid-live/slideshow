@@ -940,7 +940,7 @@
         ** ** avoid simultaneous image load
     <=> ** Preload() will check for s.preload value and call loadContent() again accoring to preload value
         ** loadContent()  <====> Preload();
-    
+
     *   @param {Number} index - index of the slide
     *   @param {Boolean} fromTouch - true if slide function called via touch event or mouse drag
     *   @param {Boolean} fromThumb - true if slide function called via thumbnail click
@@ -1486,7 +1486,7 @@
 
                 if (_lgUtils2.default.hasClass(e.target, 'lg-outer') || _lgUtils2.default.hasClass(e.target, 'lg-item') || _lgUtils2.default.hasClass(e.target, 'lg-img-wrap') && mousedown) {
                     if (!_lgUtils2.default.hasClass(_this.outer, 'lg-dragging')) {
-                        _this.destroy();
+                        //_this.destroy();
                     }
                 }
             });
