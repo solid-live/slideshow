@@ -1,6 +1,6 @@
 {
   "name": "solid_live_slideshow",
-  "version": "0.0.71",
+  "version": "0.0.72",
   "description": "Slideshow for solid live",
   "main": "index.js",
   "scripts": {

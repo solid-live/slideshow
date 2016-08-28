@@ -26,6 +26,26 @@
 
   <script>
 
+  // defaults
+  var defaultContainer = 'https://melvin.databox.me/imagelist/'
+
+  // globals
+  var bg        = getParam('bg')
+  var container = getParam('container') || defaultContainer
+  var inbox     = getParam('inbox')
+  var playlist  = getParam('playlist')
+  var safe      = getParam('safe')
+  var sort      = getParam('sort')
+  var tag       = getParam('tag')
+  var wss       = getParam('wss') || container
+
+  var slides    = []
+  var files     = []
+  var el        = document.getElementById('animated-thumbnails')
+  $scope        = {}
+  var doRefresh = false
+  var fetchURI
+
   // utils
   /**
    * Get parameters from query string
@@ -61,25 +81,6 @@
       return obj.uri
     }
   }
-
-  // defaults
-  var defaultContainer = 'https://melvin.databox.me/imagelist/'
-
-  // globals
-  var bg        = getParam('bg')
-  var container = getParam('container') || defaultContainer
-  var playlist  = getParam('playlist')
-  var safe      = getParam('safe')
-  var sort      = getParam('sort')
-  var tag       = getParam('tag')
-  var wss       = getParam('wss') || container
-
-  var slides    = []
-  var files     = []
-  var el        = document.getElementById('animated-thumbnails')
-  $scope        = {}
-  var doRefresh = false
-  var fetchURI
 
   /**
    * Change files into slides
@@ -262,7 +263,6 @@
 
   }
 
-
   /**
   * Refresh slides
   */
@@ -354,10 +354,8 @@
     xhr.send(data)
   }
 
-  var hook = getParam('hook')
-
   function put(name, data) {
-    putFile(hook + name, data)
+    putFile(inbox + name, data)
   }
 
   function getCurrentVideo(type) {
@@ -439,7 +437,7 @@
       }
 
       var turtle = toTurtle(fetchURI, tag)
-      if (hook) {
+      if (inbox) {
         if (type === 1) {
           put(100, turtle)
         }
@@ -501,7 +499,7 @@
       }
 
       var turtle = toTurtle(fetchURI)
-      if (hook) {
+      if (inbox) {
         put('112', turtle)
       }
 
@@ -521,7 +519,7 @@
    */
   function rate(rating) {
     var turtle = toTurtle(fetchURI)
-    if (hook) {
+    if (inbox) {
       put(rating, turtle)
     }
   }
