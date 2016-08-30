@@ -11,15 +11,12 @@ var slideshow = require('../')
  */
 function bin(argv) {
   commander
-    .option('-k, --keep <n>', 'how many items to keep', parseInt)
-    .option('-n, --num <n>', 'how many items to delete', parseInt)
     .parse(process.argv)
 
-  var uri  = commander.args[0]
-  var num  = commander.num
-  var keep = commander.keep
+  var playlist = commander.args[0]
+  var uri      = commander.args[1]
 
-  slideshow.deleteFromPlaylist(uri, num, keep)
+  slideshow.addToPlaylist(playlist, uri)
 }
 
 // If one import this file, this is a module, otherwise a library
