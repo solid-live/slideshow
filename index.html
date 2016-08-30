@@ -374,8 +374,23 @@
     xhr.send(data)
   }
 
+  /**
+   * post a file with turtle data
+   * @param  {string} file The URI to put
+   * @param  {string} data The data to put in turtle
+   */
+  function postFile(file, slug, data) {
+    console.log(file, data)
+    xhr = new XMLHttpRequest()
+    xhr.open('POST', file, false)
+    xhr.setRequestHeader('Content-Type', 'text/turtle; charset=UTF-8')
+    xhr.setRequestHeader('Slug', slug)
+    xhr.send(data)
+  }
+
   function put(name, data) {
-    putFile(inbox + name, data)
+    //putFile(inbox + name, data)
+    postFile(inbox, name, data)
   }
 
   function getCurrentVideo(type) {
