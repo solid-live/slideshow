@@ -39,7 +39,7 @@
   var safe      = getParam('safe')
   var sort      = getParam('sort')
   var tag       = getParam('tag')
-  var wss       = getParam('wss') || container
+  var wss       = getParam('wss') || playlist || container
 
   var slides    = []
   var files     = []
@@ -561,7 +561,6 @@
         play(1)
       }
     }
-
 
     var els = document.getElementsByClassName("lg-image")
     for (var i = 0; i < els.length; i++) {
