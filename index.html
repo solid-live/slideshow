@@ -212,7 +212,7 @@
     var wss = getWss(sub)
     console.log('connecting to : ' + wss)
 
-    socket = new WebSocket(wss)
+    socket = new WebSocket(wss, 'echo-protocol')
 
     socket.onopen = function(){
       console.log('subscribing to',  sub)

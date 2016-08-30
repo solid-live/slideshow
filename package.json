@@ -1,6 +1,6 @@
 {
   "name": "solid_live_slideshow",
-  "version": "0.0.80",
+  "version": "0.0.81",
   "description": "Slideshow for solid live",
   "main": "index.js",
   "scripts": {
@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/solid-live/slideshow/issues"
   },
-  "homepage": "https://github.com/solid-live/slideshow#readme"
+  "homepage": "https://github.com/solid-live/slideshow#readme",
+  "dependencies": {
+    "rdf-shell": "^0.2.2"
+  }
 }
