@@ -410,6 +410,7 @@
    * @return {string}          Turtle to send
    */
   function toTurtle(fetchURI, tag) {
+    var user
     var turtle = '<> <urn:string:playlist> <' + fetchURI + '> .\n'
     if (tag) {
       turtle += '<> <urn:string:tag> "' + tag + '" .\n'
