@@ -74,6 +74,10 @@
     if (inbox) {
       return inbox
     }
+    if (playlist) {
+      var ret = playlist.substring(0, playlist.lastIndexOf('/')) + '/../inbox/'
+      return ret
+    }
     if (container) {
       var ret = container + '../inbox/'
       return ret
