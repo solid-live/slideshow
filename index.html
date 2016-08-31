@@ -733,9 +733,13 @@
   //main
   inbox = inbox || getInbox()
   console.log('inbox', inbox)
-  connectToSocket(wss)
+  //connectToSocket(wss)
   create()
-
+  setTimeout(function() {
+    u.setRefreshHandler($rdf.sym(fetchURI), function(doc) {
+      refresh()
+    })
+  }, 1000)
 
   </script>
 </body>
