@@ -335,7 +335,7 @@
 
     f.requestURI(fetchURI , undefined, true, processGraph)
     */
-    u.reload(g, doc = $rdf.sym(fetchURI), processGraph)
+    UI.store.updater.reload(UI.store.store, doc = $rdf.sym(fetchURI), processGraph)
 
   }
 
@@ -752,7 +752,7 @@
   //connectToSocket(wss)
   create()
   setTimeout(function() {
-    u.setRefreshHandler($rdf.sym(fetchURI), function(doc) {
+    UI.store.updater.setRefreshHandler($rdf.sym(fetchURI), function(doc) {
       refresh()
     })
   }, 1000)
