@@ -41,12 +41,28 @@
   var tag       = getParam('tag')
   var wss       = getParam('wss') || playlist || container
 
+  var UI = {
+    store : {
+      rdf     : null,
+      store   : null,
+      fetcher : null,
+      update  : null
+    }
+  }
+
   var slides    = []
   var files     = []
   var el        = document.getElementById('animated-thumbnails')
   $scope        = {}
   var doRefresh = false
   var fetchURI, f, g, u
+
+  function init() {
+    UI.store.rdf     = $rdf
+    UI.store.store   = UI.store.rdf.graph()
+    UI.store.fetcher = UI.store.rdf.fetcher(UI.store.store)
+    UI.store.updater = new UI.store.rdf.UpdateManager(UI.store.store)
+  }
 
   // utils
   /**
@@ -276,12 +292,12 @@
     var el = document.getElementById('animated-thumbnails')
     slides = []
     files = []
-    g = $rdf.graph()
-    f = $rdf.fetcher(g)
-    u = new $rdf.UpdateManager(g)
+    //g = $rdf.graph()
+    //f = $rdf.fetcher(g)
+    //u = new $rdf.UpdateManager(g)
 
 
-    f.requestURI(fetchURI , undefined, true, processGraph)
+    UI.store.fetcher.requestURI(fetchURI , undefined, true, processGraph)
 
   }
 
@@ -330,7 +346,7 @@
    */
   function processGraph(ok, body) {
 
-    var arr = g.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(fetchURI))
+    var arr = UI.store.store.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(fetchURI))
     console.log(arr)
     for (var i = 0; i < arr.length; i++) {
       var file = arr[i]
@@ -338,8 +354,8 @@
       if (file.object && file.object.uri && /.ttl$/.test(file.object.uri) ) {
         continue
       }
-      var mtime = anyObj(g, file.object, 'http://www.w3.org/ns/posix/stat#mtime')
-      var title = anyObj(g, file.object, 'http://purl.org/dc/terms/title')
+      var mtime = anyObj(UI.store.store, file.object, 'http://www.w3.org/ns/posix/stat#mtime')
+      var title = anyObj(UI.store.store, file.object, 'http://purl.org/dc/terms/title')
 
       var type = getType(file.object.uri)
       files.push({ "uri" : file.object.uri, "mtime" : mtime, "type" : type, "title" : title })
@@ -421,7 +437,7 @@
     if (tag) {
       turtle += '<> <urn:string:tag> "' + tag + '" .\n'
     }
-    var preds = g.statementsMatching(undefined, $rdf.sym("http://www.w3.org/2007/ont/httph#user"), null)
+    var preds = UI.store.store.statementsMatching(undefined, $rdf.sym("http://www.w3.org/2007/ont/httph#user"), null)
     if (preds && preds[0] && preds[0].object && preds[0].object.value) {
       user = preds[0].object.value
     }
@@ -508,7 +524,6 @@
     doRefresh = false
 
     var i = 0
-
 
     setTimeout(function() {
       var id = 'v' + i
@@ -731,6 +746,7 @@
   })
 
   //main
+  init()
   inbox = inbox || getInbox()
   console.log('inbox', inbox)
   //connectToSocket(wss)
