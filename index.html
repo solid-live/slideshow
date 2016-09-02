@@ -33,6 +33,7 @@
 
   // globals
   var bg        = getParam('bg')
+  var buffers   = getParam('buffers') || 2
   var container = getParam('container') || defaultContainer
   var inbox     = getParam('inbox')
   var playlist  = getParam('playlist')
@@ -51,6 +52,7 @@
   }
 
   var slides    = []
+  var seen      = []
   var files     = []
   var el        = document.getElementById('animated-thumbnails')
   $scope        = {}
@@ -295,8 +297,7 @@
     //g = $rdf.graph()
     //f = $rdf.fetcher(g)
     //u = new $rdf.UpdateManager(g)
-
-
+    //
     UI.store.fetcher.requestURI(fetchURI , undefined, true, processGraph)
 
   }
@@ -431,11 +432,23 @@
   }
 
   function getCurrentVideo(type) {
+    var count = 0
     for (var i = 0; i < slides.length; i++) {
       var slide = slides[i]
       var href = slide.href
       if (getType(href) === type) {
-        return i
+        count++
+        if (count === buffers || type != 0) {
+          if ( seen.indexOf(slide.href) === -1 ) {
+            seen.push(slide.href)
+            return i
+          } else {
+            seen.push(slides[candidate].href)
+            return candidate
+          }
+        }
+        var candidate = i
+        console.log('candidate', candidate)
       }
     }
   }
@@ -461,6 +474,9 @@
     }
     if (safe) {
       turtle += '<> <urn:string:safe> <' + safe + '> .\n'
+    }
+    if (buffers) {
+      turtle += '<> <urn:string:buffers> <' + buffers + '> .\n'
     }
     return turtle
   }
