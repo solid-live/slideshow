@@ -371,14 +371,16 @@
       } else {
         var mediaURI = obj.uri
       }
-      files.push({ "uri" : mediaURI, "mtime" : mtime, "type" : type, "title" : title })
+      files.push({ "uri" : mediaURI, "mtime" : mtime, "type" : type, "title" : title, "index" : index })
     }
     files = files.sort(function(a,b) {
       if (a.type === b.type) {
+        var ai = a.mtime || a.index
+        var bi = b.mtime || b.index
         if (sort === 'desc') {
-          return parseFloat(b.mtime) - parseFloat(a.mtime)
+          return parseFloat(bi) - parseFloat(ai)
         } else {
-          return parseFloat(a.mtime) - parseFloat(b.mtime)
+          return parseFloat(ai) - parseFloat(bi)
         }
       } else {
         var order = [1,2,0]
