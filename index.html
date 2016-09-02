@@ -345,20 +345,33 @@
    * @param  {string} body Body of return
    */
   function processGraph(ok, body) {
+    var slots = false
 
     var arr = UI.store.store.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(fetchURI))
+    if (!arr || !arr.length) {
+      arr = UI.store.store.statementsMatching(null, $rdf.sym('http://purl.org/ontology/pbo/core#slot'), null, $rdf.sym(fetchURI))
+      slots = true
+    }
     console.log(arr)
     for (var i = 0; i < arr.length; i++) {
       var file = arr[i]
       var subject = file.subject
-      if (file.object && file.object.uri && /.ttl$/.test(file.object.uri) ) {
+      var obj = file.object
+      if (obj && obj.uri && /.ttl$/.test(obj.uri) ) {
         continue
       }
-      var mtime = anyObj(UI.store.store, file.object, 'http://www.w3.org/ns/posix/stat#mtime')
-      var title = anyObj(UI.store.store, file.object, 'http://purl.org/dc/terms/title')
 
-      var type = getType(file.object.uri)
-      files.push({ "uri" : file.object.uri, "mtime" : mtime, "type" : type, "title" : title })
+      var mtime = anyObj(UI.store.store, obj, 'http://www.w3.org/ns/posix/stat#mtime')
+      var index  = anyObj(UI.store.store, obj, 'http://purl.org/ontology/olo/core#index')
+      var title = anyObj(UI.store.store, obj, 'http://purl.org/dc/terms/title')
+
+      var type = getType(obj.uri)
+      if (slots) {
+        var mediaURI = anyObj(UI.store.store, obj, 'http://purl.org/ontology/pbo/core#playlist_item')
+      } else {
+        var mediaURI = obj.uri
+      }
+      files.push({ "uri" : mediaURI, "mtime" : mtime, "type" : type, "title" : title })
     }
     files = files.sort(function(a,b) {
       if (a.type === b.type) {
