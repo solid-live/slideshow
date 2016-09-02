@@ -349,7 +349,7 @@
 
     var arr = UI.store.store.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(fetchURI))
     if (!arr || !arr.length) {
-      arr = UI.store.store.statementsMatching(null, $rdf.sym('http://purl.org/ontology/pbo/core#slot'), null, $rdf.sym(fetchURI))
+      arr = UI.store.store.statementsMatching(null, $rdf.sym('http://purl.org/ontology/pbo/core#playlist_slot'), null, $rdf.sym(fetchURI))
       slots = true
     }
     console.log(arr)
