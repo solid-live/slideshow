@@ -132,10 +132,11 @@
       if (/.mp4$/.test(file.uri)) {
         var thumb = file.uri.replace('/video/', '/thumbnail/') + '.png'
         var title = file.title || 'Playlist'
+        var start = file.start || 0
         var slide = {
           href: file.uri + '?' + new Date().getTime(),
           "thumb": thumb + '?' + new Date().getTime(),
-          subHtml: '<span class="pl">' + title + '</span> item : <a href="#" onclick="play()">' + ( i + 1 ) + '</a>' ,
+          subHtml: '<span class="pl">' + title + '</span> item : <a href="#" onclick="play()">' + ( i + 1 ) + '</a> (' + start + 's)' ,
           videoAutoplay: false,
           vimeoPlayerParams: { autoplay: 0 },
           youtubePlayerParams: { autoplay: 0 },
@@ -165,7 +166,7 @@
    * Creates a light gallery
    * @param  {object} el The element to use
    */
-  function createGallery(el) {
+  function render(el) {
 
     lightGallery(el, {
 
@@ -417,7 +418,7 @@
       }
 
       var mtime = anyObj(UI.store.store, obj, 'http://www.w3.org/ns/posix/stat#mtime')
-      var index  = anyObj(UI.store.store, obj, 'http://purl.org/ontology/olo/core#index')
+      var index = anyObj(UI.store.store, obj, 'http://purl.org/ontology/olo/core#index')
       var title = anyObj(UI.store.store, obj, 'http://purl.org/dc/terms/title')
 
       var type  = getType(obj.uri)
@@ -431,39 +432,46 @@
       }
       files.push({ "uri" : mediaURI, "mtime" : mtime, "type" : type, "title" : title, "index" : index, "start" : start, "file" : file })
     }
-    files = files.sort(function(a,b) {
-      if (a.type === b.type) {
-        if (a.file === b.file) {
-          var ai = a.start || a.mtime || a.index
-          var bi = b.start || b.mtime || b.index
-          if (sort === 'desc') {
-            return parseFloat(bi) - parseFloat(ai)
-          } else {
-            return parseFloat(ai) - parseFloat(bi)
-          }
-        } else {
-          var ai = a.mtime || a.index
-          var bi = b.mtime || b.index
-          if (sort === 'desc') {
-            return parseFloat(bi) - parseFloat(ai)
-          } else {
-            return parseFloat(ai) - parseFloat(bi)
-          }
-        }
-      } else {
-        var order = [1,2,0]
-        return order[b.type] - order[a.type]
-      }
-    })
+    files = files.sort(sortFiles)
     filesToSlides(files, slides)
 
     setTimeout(function() {
 
-      createGallery(el)
+      render(el)
       setTimeout(addEvents, 1000)
 
     }, 500)
 
+  }
+
+  /**
+   * sort files
+   * @param  {object} a first element
+   * @param  {object} b second element
+   */
+  function sortFiles(a, b) {
+    if (a.type === b.type) {
+      if (a.file === b.file) {
+        var ai = a.start || a.mtime || a.index
+        var bi = b.start || b.mtime || b.index
+        if (sort === 'desc') {
+          return parseFloat(bi) - parseFloat(ai)
+        } else {
+          return parseFloat(ai) - parseFloat(bi)
+        }
+      } else {
+        var ai = a.mtime || a.index
+        var bi = b.mtime || b.index
+        if (sort === 'desc') {
+          return parseFloat(bi) - parseFloat(ai)
+        } else {
+          return parseFloat(ai) - parseFloat(bi)
+        }
+      }
+    } else {
+      var order = [1,2,0]
+      return order[b.type] - order[a.type]
+    }
   }
 
   /**
@@ -500,17 +508,17 @@
 
   function getCurrentVideo(type) {
     var count = 0
-    for (var i = 0; i < slides.length; i++) {
-      var slide = slides[i]
-      var href = slide.href
+    for (var i = 0; i < files.length; i++) {
+      var file = files[i]
+      var href = file.uri
       if (getType(href) === type) {
         count++
         if (count === buffers || type != 0) {
-          if ( seen.indexOf(slide.href) === -1 ) {
-            seen.push(slide.href)
+          if ( seen.indexOf(file.uri) === -1 ) {
+            seen.push(file.uri)
             return i
           } else {
-            seen.push(slides[candidate].href)
+            seen.push(files[candidate].uri)
             return candidate
           }
         }
