@@ -196,24 +196,78 @@
   /**
   * Get type of uri
   * @param  {string} str The uri
-  * @return {number}     The type or -1
+  * @return {number}     The type or null
   */
   function getType(str) {
-    var type = -1
+    var ret = null
     var match = /\/[0-9]+,[0-9]+,.*/.test(str)
     if (!match) {
-      return -1
+      return null
     }
     var a = str.split(',')
     if (a && a[1]) {
-      type = parseInt(a[1])
+      ret = parseInt(a[1])
     } else {
-      return -1
+      return null
     }
-    if (isNaN(type)) {
-      return -1
+    if (isNaN(ret)) {
+      return null
     }
-    return type
+    return ret
+  }
+
+  /**
+  * Get file of uri
+  * @param  {string} str The uri
+  * @return {string}     The file or null
+  */
+  function getFile(str) {
+    var ret = null
+    var match = /\/[0-9]+,[0-9]+,.*/.test(str)
+    if (!match) {
+      return null
+    }
+    var a = str.split(',')
+    if (a && a[2]) {
+      ret = a[2]
+      return ret
+    } else {
+      return null
+    }
+    if (isNaN(ret)) {
+      return null
+    }
+    return ret
+  }
+
+  /**
+  * Get start of uri
+  * @param  {string} str The uri
+  * @return {number}     The start or -1
+  */
+  function getStart(str) {
+    var ret = null
+    var match = /\/[0-9]+,[0-9]+,.*/.test(str)
+    if (!match) {
+      return null
+    }
+    var a = str.split(',')
+    if (a && a[0]) {
+      var endi = a[0].lastIndexOf('/') + 1
+      if ( endi < a[0].length ) {
+        var end = a[0].substring(a[0].lastIndexOf('/') + 1)
+        ret = parseInt(end)
+        return ret
+      } else {
+        return null
+      }
+    } else {
+      return null
+    }
+    if (isNaN(ret)) {
+      return null
+    }
+    return ret
   }
 
   /**
@@ -366,22 +420,35 @@
       var index  = anyObj(UI.store.store, obj, 'http://purl.org/ontology/olo/core#index')
       var title = anyObj(UI.store.store, obj, 'http://purl.org/dc/terms/title')
 
-      var type = getType(obj.uri)
+      var type  = getType(obj.uri)
+      var start = getStart(obj.uri)
+      var file  = getFile(obj.uri)
+
       if (slots) {
         var mediaURI = anyObj(UI.store.store, obj, 'http://purl.org/ontology/pbo/core#playlist_item')
       } else {
         var mediaURI = obj.uri
       }
-      files.push({ "uri" : mediaURI, "mtime" : mtime, "type" : type, "title" : title, "index" : index })
+      files.push({ "uri" : mediaURI, "mtime" : mtime, "type" : type, "title" : title, "index" : index, "start" : start, "file" : file })
     }
     files = files.sort(function(a,b) {
       if (a.type === b.type) {
-        var ai = a.mtime || a.index
-        var bi = b.mtime || b.index
-        if (sort === 'desc') {
-          return parseFloat(bi) - parseFloat(ai)
+        if (a.file === b.file) {
+          var ai = a.start || a.mtime || a.index
+          var bi = b.start || b.mtime || b.index
+          if (sort === 'desc') {
+            return parseFloat(bi) - parseFloat(ai)
+          } else {
+            return parseFloat(ai) - parseFloat(bi)
+          }
         } else {
-          return parseFloat(ai) - parseFloat(bi)
+          var ai = a.mtime || a.index
+          var bi = b.mtime || b.index
+          if (sort === 'desc') {
+            return parseFloat(bi) - parseFloat(ai)
+          } else {
+            return parseFloat(ai) - parseFloat(bi)
+          }
         }
       } else {
         var order = [1,2,0]
