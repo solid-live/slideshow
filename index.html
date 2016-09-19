@@ -112,11 +112,11 @@
   function anyObj(g, s, p) {
     var obj
     obj = g.any(s, $rdf.sym(p))
-    if (obj && obj.value) {
-      return obj.value
-    }
     if (obj && obj.uri) {
       return obj.uri
+    }
+    if (obj && obj.value) {
+      return obj.value
     }
   }
 
@@ -421,6 +421,7 @@
       var mtime = anyObj(UI.store.store, obj, 'http://www.w3.org/ns/posix/stat#mtime')
       var index = anyObj(UI.store.store, obj, 'http://purl.org/ontology/olo/core#index')
       var title = anyObj(UI.store.store, obj, 'http://purl.org/dc/terms/title')
+      var startTime = anyObj(UI.store.store, obj, 'https://schema.org/startTime')
 
       var type  = getType(obj.uri)
       var start = getStart(obj.uri)
@@ -431,7 +432,7 @@
       } else {
         var mediaURI = obj.uri
       }
-      files.push({ "uri" : mediaURI, "mtime" : mtime, "type" : type, "title" : title, "index" : index, "start" : start, "file" : file })
+      files.push({ "uri" : mediaURI, "mtime" : mtime, "type" : type, "title" : title, "index" : index, "start" : start, "file" : file, 'startTime' : startTime, 'subject' : obj.uri })
     }
     files = files.sort(sortFiles)
     filesToSlides(files, slides)
@@ -581,13 +582,20 @@
     var index = window.lgData[el.getAttribute('lg-uid')].index
     var id = 'v' + index
     var video = document.getElementById(id)
+
+    if (video.paused) {
+      video.play()
+    } else {
+      return
+    }
+
+
     var start = video.currentTime
     var end = start + duration
     var captions = video.addTextTrack('captions')
     var cue = new VTTCue(start, end, '')
     cue.pauseOnExit = true
     captions.addCue(cue)
-    video.play()
     rfs = video.requestFullScreen || video.webkitRequestFullScreen || video.mozRequestFullScreen
     rfs.call(video)
     video.onpause = function(e) {
@@ -610,6 +618,16 @@
     if (inbox) {
       put('200', turtle)
     }
+
+    var f = files[index]
+    if (f.startTime) {
+      var del = $rdf.st($rdf.sym(f.subject), $rdf.sym('https://schema.org/startTime'), '' + Math.floor(start), $rdf.sym(fetchURI))      
+    }
+    var ins = $rdf.st($rdf.sym(f.subject), $rdf.sym('https://schema.org/startTime'), '' + Math.floor(end), $rdf.sym(fetchURI))
+
+    UI.store.updater.update(del, ins, function() {
+
+    })
 
   }
 
@@ -789,6 +807,13 @@
 
     if (bg) {
       $('.lg-backdrop').css('background-color', bg)
+    }
+
+    for (var i = 0; i < files.length; i++) {
+      var file = files[i]
+      if (file.startTime)  {
+        document.getElementById('v' + i).currentTime = file.startTime
+      }
     }
 
   }
