@@ -130,6 +130,7 @@
     for (var i = 0; i < files.length; i++) {
       var file = files[i]
       if (/.mp4$/.test(file.uri)) {
+        console.log('file', file);
         var thumb = file.uri.replace('/video/', '/thumbnail/') + '.png'
         var title = file.title || 'Playlist'
         var start = file.start || 0
@@ -528,13 +529,17 @@
     }
   }
 
+
   /**
    * Create turtle for inbox post
    * @param  {string} fetchURI The URI of the playlist
    * @param  {string} tag      A tag
+   * @param  {string} mediaURI The URI being played
+   * @param  {number} start start value
+   * @param  {number} end end value
    * @return {string}          Turtle to send
    */
-  function toTurtle(fetchURI, tag) {
+  function toTurtle(fetchURI, tag, mediaURI, start, end) {
     var user
     var turtle = '<> <urn:string:playlist> <' + fetchURI + '> .\n'
     if (tag) {
@@ -553,7 +558,59 @@
     if (buffers) {
       turtle += '<> <urn:string:buffers> <' + buffers + '> .\n'
     }
+    if (mediaURI) {
+      turtle += '<> <urn:string:mediaURI> <' + mediaURI + '> .\n'
+    }
+    if (start) {
+      turtle += '<> <urn:string:start> <' + Math.floor(start) + '> .\n'
+    }
+    if (end) {
+      turtle += '<> <urn:string:end> <' + Math.floor(end) + '> .\n'
+    }
+
     return turtle
+  }
+
+  /**
+   * Play a partial video
+   * @param  {number} duration How long to play
+   */
+  function partial(duration) {
+    var defaultDuration = 15
+    duration = duration || defaultDuration
+    var index = window.lgData[el.getAttribute('lg-uid')].index
+    var id = 'v' + index
+    var video = document.getElementById(id)
+    var start = video.currentTime
+    var end = start + duration
+    var captions = video.addTextTrack('captions')
+    var cue = new VTTCue(start, end, '')
+    cue.pauseOnExit = true
+    captions.addCue(cue)
+    video.play()
+    rfs = video.requestFullScreen || video.webkitRequestFullScreen || video.mozRequestFullScreen
+    rfs.call(video)
+    video.onpause = function(e) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen()
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen()
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen()
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen()
+      }
+      if (doRefresh) {
+        refresh()
+      }
+    }
+
+    var mediaURI = files[index].uri
+    var turtle = toTurtle(fetchURI, null, mediaURI, start, end)
+    if (inbox) {
+      put('200', turtle)
+    }
+
   }
 
   /**
@@ -567,6 +624,10 @@
     doRefresh = false
 
     var i = getCurrentVideo(type)
+
+    function playVideo(i) {
+
+    }
 
 
     setTimeout(function() {
@@ -767,6 +828,13 @@
 
     if(e.keyCode === 78 || e.keyCode === 13 ){
       play(2)
+
+      e.preventDefault()
+      return false
+    }
+
+    if(e.keyCode === 81 ){
+      partial()
 
       e.preventDefault()
       return false
