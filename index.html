@@ -422,6 +422,7 @@
       var index = anyObj(UI.store.store, obj, 'http://purl.org/ontology/olo/core#index')
       var title = anyObj(UI.store.store, obj, 'http://purl.org/dc/terms/title')
       var startTime = anyObj(UI.store.store, obj, 'https://schema.org/startTime')
+      var subtitle = anyObj(UI.store.store, obj, 'http://purl.org/ontology/po/Subtitle')
 
       var type  = getType(obj.uri)
       var start = getStart(obj.uri)
@@ -432,7 +433,7 @@
       } else {
         var mediaURI = obj.uri
       }
-      files.push({ "uri" : mediaURI, "mtime" : mtime, "type" : type, "title" : title, "index" : index, "start" : start, "file" : file, 'startTime' : startTime, 'subject' : obj.uri })
+      files.push({ "uri" : mediaURI, "mtime" : mtime, "type" : type, "title" : title, "index" : index, "start" : start, "file" : file, 'startTime' : startTime, 'subject'  : obj.uri , 'subtitle' : subtitle })
     }
     files = files.sort(sortFiles)
     filesToSlides(files, slides)
@@ -621,7 +622,7 @@
 
     var f = files[index]
     if (f.startTime) {
-      var del = $rdf.st($rdf.sym(f.subject), $rdf.sym('https://schema.org/startTime'), '' + Math.floor(start), $rdf.sym(fetchURI))      
+      var del = $rdf.st($rdf.sym(f.subject), $rdf.sym('https://schema.org/startTime'), '' + Math.floor(start), $rdf.sym(fetchURI))
     }
     var ins = $rdf.st($rdf.sym(f.subject), $rdf.sym('https://schema.org/startTime'), '' + Math.floor(end), $rdf.sym(fetchURI))
 
@@ -812,7 +813,22 @@
     for (var i = 0; i < files.length; i++) {
       var file = files[i]
       if (file.startTime)  {
-        document.getElementById('v' + i).currentTime = file.startTime
+        var video = document.getElementById('v' + i)
+        video.currentTime = file.startTime
+      }
+      if (file.subtitle) {
+        var video = document.getElementById('v' + i)
+        video.setAttribute('crossorigin', 'anonymous')
+        if (video.textTracks.length > 0) {
+          continue
+        }
+        var track = document.createElement("track")
+        track.kind = "captions"
+        track.src = "https://p.myfbx.com/media/melvin/Elements/Suits.S06E10.HDTV.x264-KILLERS[ettv]/Suits.S06E10.HDTV.x264-KILLERS%5Bettv%5D.vtt"
+        //this.mode = "showing"
+        video.appendChild(track)
+        video.textTracks[0].mode = "showing"
+        video.textTracks[1] = null
       }
     }
 
