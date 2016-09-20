@@ -140,7 +140,7 @@
         var thumb = file.uri.replace('/video/', '/thumbnail/') + '.png'
         var title = file.title || 'Playlist'
         var start = file.start || 0
-        var html = '<video class="lg-video-object lg-youtube lg-object" id="v' + i + '" controls> <source src="' + file.uri + '?' + new Date().getTime() + '" ></video>'
+        var html = '<video class="lg-video-object lg-youtube lg-object" id="v' + i + '" > <source src="' + file.uri + '?' + new Date().getTime() + '" ></video>'
         var subHtml = '<span class="pl">' + title + '</span> item : <a href="#" onclick="play()">' + ( i + 1 ) + '</a> (' + start + 's)'
         if (UI.model.balance) {
           subHtml += ' Credits : <span id="balance">' + UI.model.balance + '</span>'
