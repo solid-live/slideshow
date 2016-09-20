@@ -813,7 +813,7 @@
     for (var i = 0; i < els.length; i++) {
       var el = els[i]
       el.onclick = function() {
-        play(0)
+        partial()
       }
     }
 
@@ -830,10 +830,10 @@
     for (var i = 0; i < els.length; i++) {
       var el = els[i]
       el.onclick = function() {
-        view(12)
+        partial()
       }
       el.ontouchstart = function() {
-        view(12)
+        partial()
       }
     }
 
