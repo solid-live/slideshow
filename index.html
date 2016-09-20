@@ -187,12 +187,23 @@
       dynamicEl: slides,
       videoAutoplay: false,
       autoplay: false,
-      autoplayControls: true
+      autoplayControls: true,
+      preload: 4
 
     })
     if (bg) {
       $('.lg-backdrop').css('background-color', bg)
     }
+
+    setTimeout(function () {
+      for (var i = 0; i < files.length; i++) {
+        var video = document.getElementById('v' + i)
+        var canvas = document.createElement('canvas')
+        canvas.getContext('2d').drawImage(video, 0, 0, 100, 80)
+        var img = document.getElementsByTagName('img')[0]
+        img.parentNode.replaceChild(canvas, img)
+      }
+    }, 1500)
 
   }
 
@@ -856,6 +867,7 @@
         video.textTracks[0].mode = "showing"
         video.textTracks[1] = null
       }
+
     }
 
   }
