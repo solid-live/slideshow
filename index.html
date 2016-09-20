@@ -42,6 +42,8 @@
   var tag       = getParam('tag')
   var wss       = getParam('wss') || playlist || container
 
+  var template
+
   var UI = {
     store : {
       rdf     : null,
@@ -64,6 +66,10 @@
     UI.store.store   = UI.store.rdf.graph()
     UI.store.fetcher = UI.store.rdf.fetcher(UI.store.store)
     UI.store.updater = new UI.store.rdf.UpdateManager(UI.store.store)
+    UI.model = {}
+    UI.model.cost = 40
+
+    template = UI.model
   }
 
   // utils
@@ -134,16 +140,21 @@
         var thumb = file.uri.replace('/video/', '/thumbnail/') + '.png'
         var title = file.title || 'Playlist'
         var start = file.start || 0
+        var html = '<video class="lg-video-object lg-youtube lg-object" id="v' + i + '" controls> <source src="' + file.uri + '?' + new Date().getTime() + '" ></video>'
+        var subHtml = '<span class="pl">' + title + '</span> item : <a href="#" onclick="play()">' + ( i + 1 ) + '</a> (' + start + 's)'
+        if (UI.model.balance) {
+          subHtml += ' Credits : <span id="balance">' + UI.model.balance + '</span>'
+        }
         var slide = {
-          href: file.uri + '?' + new Date().getTime(),
+          'href': file.uri + '?' + new Date().getTime(),
           "thumb": thumb + '?' + new Date().getTime(),
-          subHtml: '<span class="pl">' + title + '</span> item : <a href="#" onclick="play()">' + ( i + 1 ) + '</a> (' + start + 's)' ,
-          videoAutoplay: false,
-          vimeoPlayerParams: { autoplay: 0 },
-          youtubePlayerParams: { autoplay: 0 },
-          autoplay: false,
-          autoplayControls: true,
-          html: '<video class="lg-video-object lg-youtube lg-object" id="v' + i + '" controls> <source src="' + file.uri + '?' + new Date().getTime() + '" ></video>'
+          'subHtml': subHtml ,
+          'videoAutoplay': false,
+          'vimeoPlayerParams': { autoplay: 0 },
+          'youtubePlayerParams': { autoplay: 0 },
+          'autoplay': false,
+          'autoplayControls': true,
+          'html': html
         }
       } else {
         var file  = files[i]
@@ -404,6 +415,13 @@
   function processGraph(ok, body) {
     var slots = false
 
+    var preds = UI.store.store.statementsMatching(undefined, $rdf.sym("http://www.w3.org/2007/ont/httph#user"), null)
+    if (preds && preds[0] && preds[0].object && preds[0].object.value) {
+      UI.model.user = preds[0].object.value
+    }
+    UI.model.balance = anyObj(UI.store.store, $rdf.sym(UI.model.user), 'https://w3id.org/cc#amount')
+    console.log('processGraph', 'UI.model.balance', UI.model.balance)
+
     var arr = UI.store.store.statementsMatching(null, $rdf.sym('http://www.w3.org/ns/ldp#contains'), null, $rdf.sym(fetchURI))
     if (!arr || !arr.length) {
       arr = UI.store.store.statementsMatching(null, $rdf.sym('http://purl.org/ontology/pbo/core#playlist_slot'), null, $rdf.sym(fetchURI))
@@ -542,17 +560,16 @@
    * @return {string}          Turtle to send
    */
   function toTurtle(fetchURI, tag, mediaURI, start, end) {
-    var user
     var turtle = '<> <urn:string:playlist> <' + fetchURI + '> .\n'
     if (tag) {
       turtle += '<> <urn:string:tag> "' + tag + '" .\n'
     }
     var preds = UI.store.store.statementsMatching(undefined, $rdf.sym("http://www.w3.org/2007/ont/httph#user"), null)
     if (preds && preds[0] && preds[0].object && preds[0].object.value) {
-      user = preds[0].object.value
+      UI.model.user = preds[0].object.value
     }
-    if (user) {
-      turtle += '<> <urn:string:webid> <' + user + '> .\n'
+    if (UI.model.user) {
+      turtle += '<> <urn:string:webid> <' + UI.model.user + '> .\n'
     }
     if (safe) {
       turtle += '<> <urn:string:safe> <' + safe + '> .\n'
@@ -578,6 +595,10 @@
    * @param  {number} duration How long to play
    */
   function partial(duration) {
+    if (UI.model.balance && UI.model.cost && UI.model.balance < UI.model.cost) {
+      console.log('partial, not enough funds', 'balance', balance, 'cost', cost)
+      return
+    }
     var defaultDuration = 15
     duration = duration || defaultDuration
     var index = window.lgData[el.getAttribute('lg-uid')].index
@@ -629,6 +650,11 @@
     UI.store.updater.update(del, ins, function() {
 
     })
+
+    if (UI.model.balance) {
+      UI.model.balance -= UI.model.cost
+      document.getElementById('balance').innerHTML = UI.model.balance
+    }
 
   }
 
