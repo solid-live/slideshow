@@ -13,13 +13,15 @@ function bin(argv) {
   commander
     .option('-k, --keep <n>', 'how many items to keep', parseInt)
     .option('-n, --num <n>', 'how many items to delete', parseInt)
+    .option('-s, --sort <order>', 'how many items to delete')
     .parse(process.argv)
 
   var uri  = commander.args[0]
   var num  = commander.num
   var keep = commander.keep
+  var sortOrder = commander.sort
 
-  slideshow.deleteFromPlaylist(uri, num, keep)
+  slideshow.deleteFromPlaylist(uri, num, keep, sortOrder)
 }
 
 // If one import this file, this is a module, otherwise a library
