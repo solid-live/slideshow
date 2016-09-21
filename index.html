@@ -197,7 +197,7 @@
 
     setTimeout(function () {
       for (var i = 0; i < files.length; i++) {
-        var video = document.getElementById('v' + i)
+        var video = document.getElementsByTagName('video')[i]
         var canvas = document.createElement('canvas')
         canvas.getContext('2d').drawImage(video, 0, 0, 100, 80)
         var img = document.getElementsByTagName('img')[0]
@@ -607,7 +607,7 @@
    */
   function partial(duration) {
     if (UI.model.balance && UI.model.cost && UI.model.balance < UI.model.cost) {
-      console.log('partial, not enough funds', 'balance', balance, 'cost', cost)
+      console.log('partial, not enough funds', 'balance', UI.model.balance, 'cost', UI.model.cost)
       return
     }
     var defaultDuration = 15
