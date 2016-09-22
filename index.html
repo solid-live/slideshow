@@ -1,16 +1,16 @@
 <html>
 <head>
-  <link href="https://sachinchoolur.github.io/lightgallery.js/lightgallery/css/lightgallery.css" rel="stylesheet">
-  <link href="https://sachinchoolur.github.io/lightgallery.js/lightgallery/css/lg-transitions.css" rel="stylesheet">
+  <link href="css/lightgallery.css" rel="stylesheet">
+  <link href="css/lg-transitions.css" rel="stylesheet">
 
   <script src="js/lightgallery.js"></script>
 
   <!-- lightgallery plugins -->
-  <script src="https://sachinchoolur.github.io/lightgallery.js/lightgallery/js/lg-thumbnail.js"></script>
-  <script src="https://sachinchoolur.github.io/lightgallery.js/lightgallery/js/lg-fullscreen.js"></script>
+  <script src="js/lg-thumbnail.js"></script>
+  <script src="js/lg-fullscreen.js"></script>
   <script src="js/lg-video.js"></script>
   <script src="js/lg-solid.js"></script>
-  <script src="https://f.vimeocdn.com/js/froogaloop2.min.js"></script>
+  <script src="js/froogaloop2.min.js"></script>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
@@ -59,6 +59,7 @@
   var el        = document.getElementById('animated-thumbnails')
   $scope        = {}
   var doRefresh = false
+  var doPartial = false
   var fetchURI, f, g, u
 
   function init() {
@@ -610,6 +611,7 @@
       console.log('partial, not enough funds', 'balance', UI.model.balance, 'cost', UI.model.cost)
       return
     }
+    doPartial = false
     var defaultDuration = 15
     duration = duration || defaultDuration
     var index = window.lgData[el.getAttribute('lg-uid')].index
@@ -619,6 +621,8 @@
     if (video.paused) {
       video.play()
     } else {
+      console.log('next queued')
+      doPartial = true
       return
     }
 
@@ -632,18 +636,24 @@
     rfs = video.requestFullScreen || video.webkitRequestFullScreen || video.mozRequestFullScreen
     rfs.call(video)
     video.onpause = function(e) {
-      if (document.exitFullscreen) {
-        document.exitFullscreen()
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen()
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen()
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen()
+      if (doPartial) {
+        console.log('playing queued')
+        partial()
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen()
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen()
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen()
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen()
+        }
+        if (doRefresh) {
+          refresh()
+        }        
       }
-      if (doRefresh) {
-        refresh()
-      }
+
     }
 
     var mediaURI = files[index].uri
