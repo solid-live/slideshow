@@ -760,10 +760,29 @@
   function moveToSlide(num) {
     var el = document.getElementById('animated-thumbnails')
     var slideshow = window.lgData[el.getAttribute('lg-uid')]
+    var video = document.getElementsByTagName('video')[slideshow.index-1]
+
     if (slideshow) {
       slideshow.slide(num)
       slideshow.index = num
     }
+
+
+    console.log('index', slideshow.index)
+    console.log(video)
+
+    if (video && video.isPlaying) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen()
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen()
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen()
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen()
+      }
+    }
+
   }
 
   /**
