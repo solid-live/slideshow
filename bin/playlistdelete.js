@@ -13,6 +13,7 @@ function bin(argv) {
   commander
     .option('-k, --keep <n>', 'how many items to keep', parseInt)
     .option('-n, --num <n>', 'how many items to delete', parseInt)
+    .option('-o, --offset <n>', 'offset to start from')
     .option('-s, --sort <order>', 'how many items to delete')
     .parse(process.argv)
 
@@ -20,8 +21,9 @@ function bin(argv) {
   var num  = commander.num
   var keep = commander.keep
   var sortOrder = commander.sort
+  var offset = commander.offset
 
-  slideshow.deleteFromPlaylist(uri, num, keep, sortOrder)
+  slideshow.deleteFromPlaylist(uri, num, keep, offset, sortOrder)
 }
 
 // If one import this file, this is a module, otherwise a library

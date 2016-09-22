@@ -1,6 +1,6 @@
 {
   "name": "solid_live_slideshow",
-  "version": "0.0.122",
+  "version": "0.0.123",
   "description": "Slideshow for solid live",
   "main": "index.js",
   "scripts": {
@@ -23,6 +23,7 @@
   "dependencies": {
     "commander": "^2.9.0",
     "rdf-shell": "^0.4.1",
+    "rdflib": "^0.12.1",
     "unix-timestamp": "^0.2.0"
   }
 }
