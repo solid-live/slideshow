@@ -633,13 +633,18 @@
     var cue = new VTTCue(start, end, '')
     cue.pauseOnExit = true
     captions.addCue(cue)
+    fullscreen(video)
+    /*
     rfs = video.requestFullScreen || video.webkitRequestFullScreen || video.mozRequestFullScreen
     rfs.call(video)
+    */
     video.onpause = function(e) {
       if (doPartial) {
         console.log('playing queued')
         partial()
       } else {
+        exitFullscreen()
+        /*
         if (document.exitFullscreen) {
           document.exitFullscreen()
         } else if (document.msExitFullscreen) {
@@ -649,6 +654,7 @@
         } else if (document.webkitExitFullscreen) {
           document.webkitExitFullscreen()
         }
+        */
         if (doRefresh) {
           refresh()
         }
@@ -703,14 +709,19 @@
 
       if (el && el.play) {
         el.play()
+        fullscreen(el)
+        /*
         rfs =
         el.requestFullScreen
         || el.webkitRequestFullScreen
         || el.mozRequestFullScreen
         rfs.call(el)
+        */
 
         el.onended = function(e) {
           console.log(e)
+          exitFullscreen()
+          /*
           if (document.exitFullscreen) {
             document.exitFullscreen()
           } else if (document.msExitFullscreen) {
@@ -720,6 +731,7 @@
           } else if (document.webkitExitFullscreen) {
             document.webkitExitFullscreen()
           }
+          */
           if (doRefresh) {
             refresh()
           }
@@ -760,29 +772,63 @@
   function moveToSlide(num) {
     var el = document.getElementById('animated-thumbnails')
     var slideshow = window.lgData[el.getAttribute('lg-uid')]
-    var video = document.getElementsByTagName('video')[slideshow.index-1]
+    var currentVideo = document.getElementsByTagName('video')[slideshow.index]
+    var nextVideo = document.getElementsByTagName('video')[num]
+
+    console.log('currentVideo index', slideshow.index)
+    console.log('currentVideo', currentVideo)
+    console.log('currentVideo.paused', currentVideo.paused)
+
+    if (currentVideo) {
+      if (!currentVideo.paused) {
+        exitFullscreen()
+      }
+    }
+
+    console.log('nextVideo index', num)
+    console.log('nextVideo', nextVideo)
+    console.log('nextVideo.paused', nextVideo.paused)
+
+    if (nextVideo) {
+      if (!nextVideo.paused) {
+        fullscreen(nextVideo)
+      }
+    }
+
+
 
     if (slideshow) {
       slideshow.slide(num)
       slideshow.index = num
     }
 
+  }
 
-    console.log('index', slideshow.index)
-    console.log(video)
-
-    if (video && video.isPlaying) {
-      if (document.exitFullscreen) {
-        document.exitFullscreen()
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen()
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen()
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen()
-      }
+  /**
+   * Exit full screen
+   */
+  function exitFullscreen() {
+    if (document.exitFullscreen) {
+      document.exitFullscreen()
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen()
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen()
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen()
     }
+  }
 
+  /**
+   * Request full screen
+   * @param  {object} el The elememt
+   */
+  function fullscreen(el) {
+    rfs =
+    el.requestFullScreen
+    || el.webkitRequestFullScreen
+    || el.mozRequestFullScreen
+    rfs.call(el)
   }
 
   /**
@@ -800,13 +846,11 @@
       el = document.getElementsByTagName('img')[0]
 
       if (el) {
-        rfs =
-        el.requestFullScreen
-        || el.webkitRequestFullScreen
-        || el.mozRequestFullScreen
-        rfs.call(el)
+        fullscreen(el)
 
         setTimeout( function(e) {
+          exitFullscreen()
+          /*
           if (document.exitFullscreen) {
             document.exitFullscreen()
           } else if (document.msExitFullscreen) {
@@ -816,6 +860,7 @@
           } else if (document.webkitExitFullscreen) {
             document.webkitExitFullscreen()
           }
+          */
           if (doRefresh) {
             refresh()
           }
