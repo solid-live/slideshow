@@ -592,13 +592,13 @@
     if (mediaURI) {
       turtle += '<> <urn:string:mediaURI> <' + mediaURI + '> .\n'
     }
-    if (start) {
+    if (start || start === 0) {
       turtle += '<> <urn:string:start> <' + Math.floor(start) + '> .\n'
     }
-    if (end) {
+    if (end || end === 0) {
       turtle += '<> <urn:string:end> <' + Math.floor(end) + '> .\n'
     }
-    if (index) {
+    if (index || index === 0) {
       turtle += '<> <urn:string:index> <' + Math.floor(index) + '> .\n'
     }
 
@@ -1196,7 +1196,7 @@
       return false
     }
 
-    if(e.keyCode === 82){
+    if(e.keyCode === 81){
       getRated()
 
       e.preventDefault()
