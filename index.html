@@ -452,7 +452,7 @@
       var index = anyObj(UI.store.store, obj, 'http://purl.org/ontology/olo/core#index')
       var title = anyObj(UI.store.store, obj, 'http://purl.org/dc/terms/title')
       var startTime = anyObj(UI.store.store, obj, 'https://schema.org/startTime')
-      var subtitle = anyObj(UI.store.store, obj, 'http://purl.org/ontology/po/Subtitle')
+      var subtitle = anyObj(UI.store.store, obj, 'http://www.w3.org/ns/ma-ont#hasSubtitling')
 
       var type  = getType(obj.uri)
       var start = getStart(obj.uri)
