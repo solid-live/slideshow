@@ -571,7 +571,7 @@
    * @param  {number} end end value
    * @return {string}          Turtle to send
    */
-  function toTurtle(fetchURI, tag, mediaURI, start, end) {
+  function toTurtle(fetchURI, tag, mediaURI, start, end, index) {
     var turtle = '<> <urn:string:playlist> <' + fetchURI + '> .\n'
     if (tag) {
       turtle += '<> <urn:string:tag> "' + tag + '" .\n'
@@ -597,6 +597,9 @@
     }
     if (end) {
       turtle += '<> <urn:string:end> <' + Math.floor(end) + '> .\n'
+    }
+    if (index) {
+      turtle += '<> <urn:string:index> <' + Math.floor(index) + '> .\n'
     }
 
     return turtle
@@ -775,6 +778,11 @@
     var currentVideo = document.getElementsByTagName('video')[slideshow.index]
     var nextVideo = document.getElementsByTagName('video')[num]
 
+    if (slideshow.index === num) {
+      partial()
+      return
+    }
+
     console.log('currentVideo index', slideshow.index)
     console.log('currentVideo', currentVideo)
     console.log('currentVideo.paused', currentVideo.paused)
@@ -795,13 +803,48 @@
       }
     }
 
-
-
     if (slideshow) {
       slideshow.slide(num)
       slideshow.index = num
     }
 
+  }
+
+  /**
+   * remove current slide
+   */
+  function remove() {
+    var slideshow = window.lgData[el.getAttribute('lg-uid')]
+    var index = slideshow.index
+    var turtle = toTurtle(fetchURI, null, null, null, null, index)
+    if (inbox) {
+      put(400, turtle)
+    }
+
+  }
+
+  /**
+   * get next slide
+   */
+  function getNext() {
+    var slideshow = window.lgData[el.getAttribute('lg-uid')]
+    var index = slideshow.index
+    var turtle = toTurtle(fetchURI, null, null, null, null, index)
+    if (inbox) {
+      put(500, turtle)
+    }
+  }
+
+  /**
+   * get next slide
+   */
+  function getRated() {
+    var slideshow = window.lgData[el.getAttribute('lg-uid')]
+    var index = slideshow.index
+    var turtle = toTurtle(fetchURI, null, null, null, null, index)
+    if (inbox) {
+      put(600, turtle)
+    }
   }
 
   /**
@@ -1024,9 +1067,9 @@
 
     if(e.keyCode === 49 ){
       if (e.ctrlKey) {
-        moveToSlide(0)
-      } else {
         rate(1)
+      } else {
+        moveToSlide(0)
       }
 
       e.preventDefault()
@@ -1035,9 +1078,9 @@
 
     if(e.keyCode === 50 ){
       if (e.ctrlKey) {
-        moveToSlide(1)
-      } else {
         rate(2)
+      } else {
+        moveToSlide(1)
       }
 
       e.preventDefault()
@@ -1046,9 +1089,9 @@
 
     if(e.keyCode === 51 ){
       if (e.ctrlKey) {
-        moveToSlide(2)
-      } else {
         rate(3)
+      } else {
+        moveToSlide(2)
       }
 
       e.preventDefault()
@@ -1057,9 +1100,9 @@
 
     if(e.keyCode === 52 ){
       if (e.ctrlKey) {
-        moveToSlide(3)
-      } else {
         rate(4)
+      } else {
+        moveToSlide(3)
       }
 
       e.preventDefault()
@@ -1068,9 +1111,9 @@
 
     if(e.keyCode === 53 ){
       if (e.ctrlKey) {
-        moveToSlide(4)
-      } else {
         rate(5)
+      } else {
+        moveToSlide(4)
       }
 
       e.preventDefault()
@@ -1079,9 +1122,9 @@
 
     if(e.keyCode === 54 ){
       if (e.ctrlKey) {
-        moveToSlide(5)
-      } else {
         rate(6)
+      } else {
+        moveToSlide(5)
       }
 
       e.preventDefault()
@@ -1090,9 +1133,9 @@
 
     if(e.keyCode === 55 ){
       if (e.ctrlKey) {
-        moveToSlide(6)
-      } else {
         rate(7)
+      } else {
+        moveToSlide(6)
       }
 
       e.preventDefault()
@@ -1101,9 +1144,9 @@
 
     if(e.keyCode === 56 ){
       if (e.ctrlKey) {
-        moveToSlide(7)
-      } else {
         rate(8)
+      } else {
+        moveToSlide(7)
       }
 
       e.preventDefault()
@@ -1112,9 +1155,9 @@
 
     if(e.keyCode === 57 ){
       if (e.ctrlKey) {
-        moveToSlide(8)
-      } else {
         rate(9)
+      } else {
+        moveToSlide(8)
       }
 
       e.preventDefault()
@@ -1123,9 +1166,9 @@
 
     if(e.keyCode === 48 ){
       if (e.ctrlKey) {
-        moveToSlide(9)
-      } else {
         rate(10)
+      } else {
+        moveToSlide(9)
       }
 
       e.preventDefault()
@@ -1134,6 +1177,27 @@
 
     if(e.keyCode === 187   ){
       view(12)
+
+      e.preventDefault()
+      return false
+    }
+
+    if(e.keyCode === 88){
+      remove()
+
+      e.preventDefault()
+      return false
+    }
+
+    if(e.keyCode === 77){
+      getNext()
+
+      e.preventDefault()
+      return false
+    }
+
+    if(e.keyCode === 82){
+      getRated()
 
       e.preventDefault()
       return false

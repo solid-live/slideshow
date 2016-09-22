@@ -11,12 +11,14 @@ var slideshow = require('../')
  */
 function bin(argv) {
   commander
+  .option('-t, --time <time>', 'the start time')
     .parse(process.argv)
 
   var playlist = commander.args[0]
   var uri      = commander.args[1]
+  var time = commander.time
 
-  slideshow.addToPlaylist(playlist, uri)
+  slideshow.addToPlaylist(playlist, uri, null, time)
 }
 
 // If one import this file, this is a module, otherwise a library
