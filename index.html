@@ -651,7 +651,7 @@
         }
         if (doRefresh) {
           refresh()
-        }        
+        }
       }
 
     }
@@ -742,12 +742,27 @@
 
     }, 700)
 
+    /*
     var el = document.getElementById('animated-thumbnails')
     var slideshow = window.lgData[el.getAttribute('lg-uid')]
     if (slideshow) {
       slideshow.slide(i)
     }
+    */
+   moveToSlide(i)
 
+  }
+
+  /**
+   * Move to a specific slide
+   * @param  {number} num which slide
+   */
+  function moveToSlide(num) {
+    var el = document.getElementById('animated-thumbnails')
+    var slideshow = window.lgData[el.getAttribute('lg-uid')]
+    if (slideshow) {
+      slideshow.slide(num)
+    }
   }
 
   /**
@@ -943,70 +958,110 @@
     }
 
     if(e.keyCode === 49 ){
-      rate(1)
+      if (e.ctrlKey) {
+        moveToSlide(0)
+      } else {
+        rate(1)
+      }
 
       e.preventDefault()
       return false
     }
 
     if(e.keyCode === 50 ){
-      rate(2)
+      if (e.ctrlKey) {
+        moveToSlide(1)
+      } else {
+        rate(2)
+      }
 
       e.preventDefault()
       return false
     }
 
     if(e.keyCode === 51 ){
-      rate(3)
+      if (e.ctrlKey) {
+        moveToSlide(2)
+      } else {
+        rate(3)
+      }
 
       e.preventDefault()
       return false
     }
 
     if(e.keyCode === 52 ){
-      rate(4)
+      if (e.ctrlKey) {
+        moveToSlide(3)
+      } else {
+        rate(4)
+      }
 
       e.preventDefault()
       return false
     }
 
     if(e.keyCode === 53 ){
-      rate(5)
+      if (e.ctrlKey) {
+        moveToSlide(4)
+      } else {
+        rate(5)
+      }
 
       e.preventDefault()
       return false
     }
 
     if(e.keyCode === 54 ){
-      rate(6)
+      if (e.ctrlKey) {
+        moveToSlide(5)
+      } else {
+        rate(6)
+      }
 
       e.preventDefault()
       return false
     }
 
     if(e.keyCode === 55 ){
-      rate(7)
+      if (e.ctrlKey) {
+        moveToSlide(6)
+      } else {
+        rate(7)
+      }
 
       e.preventDefault()
       return false
     }
 
     if(e.keyCode === 56 ){
-      rate(8)
+      if (e.ctrlKey) {
+        moveToSlide(7)
+      } else {
+        rate(8)
+      }
 
       e.preventDefault()
       return false
     }
 
     if(e.keyCode === 57 ){
-      rate(9)
+      if (e.ctrlKey) {
+        moveToSlide(8)
+      } else {
+        rate(9)
+      }
 
       e.preventDefault()
       return false
     }
 
     if(e.keyCode === 48 ){
-      rate(10)
+      if (e.ctrlKey) {
+        moveToSlide(9)
+      } else {
+        rate(10)
+      }
 
       e.preventDefault()
       return false
