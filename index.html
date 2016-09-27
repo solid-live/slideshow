@@ -136,7 +136,7 @@
 
     for (var i = 0; i < files.length; i++) {
       var file = files[i]
-      if (/.mp4$/.test(file.uri)) {
+      if (/(.mp3|.mp4)$/.test(file.uri)) {
         console.log('file', file);
         var thumb = file.uri.replace('/video/', '/thumbnail/') + '.png'
         var title = file.title || 'Playlist'
