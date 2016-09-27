@@ -638,6 +638,7 @@
 
     var start = video.currentTime
     var end = start + duration
+    end -= (end % duration)
     var captions = video.addTextTrack('captions')
     var cue = new VTTCue(start, end, '')
     cue.pauseOnExit = true
