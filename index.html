@@ -971,10 +971,10 @@
       }
       el.ontouchend = function() {
         var now = new Date().getTime()
-        var short = 1000
+        var short = 500
         if (now - elapsed <= short) {
           partial()
-        }        
+        }
       }
     }
 
