@@ -960,14 +960,22 @@
 
     var els = document.getElementsByTagName("video")
     console.log('els', els)
+    var elapsed = 0
     for (var i = 0; i < els.length; i++) {
       var el = els[i]
       el.onclick = function() {
         partial()
       }
-      //el.ontouchstart = function() {
-      //  partial()
-      //}
+      el.ontouchstart = function() {
+        elapsed = new Date().getTime()
+      }
+      el.ontouchend = function() {
+        var now = new Date().getTime()
+        var short = 1000
+        if (now - elapsed <= short) {
+          partial()
+        }        
+      }
     }
 
 
