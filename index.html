@@ -971,8 +971,10 @@
       }
       el.ontouchend = function() {
         var now = new Date().getTime()
-        var short = 500
-        if (now - elapsed <= short) {
+        var short = 250
+        var diff = now - elapsed
+        console.log('diff', diff)
+        if (diff <= short) {
           partial()
         }
       }
