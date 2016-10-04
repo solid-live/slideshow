@@ -409,12 +409,6 @@
     slides = []
     files = []
 
-    /*
-    g = $rdf.graph()
-    f = $rdf.fetcher(g)
-
-    f.requestURI(fetchURI , undefined, true, processGraph)
-    */
     UI.store.updater.reload(UI.store.store, doc = $rdf.sym(fetchURI), processGraph)
 
   }
@@ -644,27 +638,13 @@
     cue.pauseOnExit = true
     captions.addCue(cue)
     fullscreen(video)
-    /*
-    rfs = video.requestFullScreen || video.webkitRequestFullScreen || video.mozRequestFullScreen
-    rfs.call(video)
-    */
+
     video.onpause = function(e) {
       if (doPartial) {
         console.log('playing queued')
         partial()
       } else {
         exitFullscreen()
-        /*
-        if (document.exitFullscreen) {
-          document.exitFullscreen()
-        } else if (document.msExitFullscreen) {
-          document.msExitFullscreen()
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen()
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen()
-        }
-        */
         if (doRefresh) {
           refresh()
         }
@@ -721,28 +701,10 @@
       if (el && el.play) {
         el.play()
         fullscreen(el)
-        /*
-        rfs =
-        el.requestFullScreen
-        || el.webkitRequestFullScreen
-        || el.mozRequestFullScreen
-        rfs.call(el)
-        */
 
         el.onended = function(e) {
           console.log(e)
           exitFullscreen()
-          /*
-          if (document.exitFullscreen) {
-            document.exitFullscreen()
-          } else if (document.msExitFullscreen) {
-            document.msExitFullscreen()
-          } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen()
-          } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen()
-          }
-          */
           if (doRefresh) {
             refresh()
           }
@@ -765,13 +727,6 @@
 
     }, 700)
 
-    /*
-    var el = document.getElementById('animated-thumbnails')
-    var slideshow = window.lgData[el.getAttribute('lg-uid')]
-    if (slideshow) {
-      slideshow.slide(i)
-    }
-    */
    moveToSlide(i)
 
   }
