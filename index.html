@@ -62,6 +62,9 @@
   var doPartial = false
   var fetchURI, f, g, u
 
+  /**
+   * Initialize UI
+   */
   function init() {
     UI.store.rdf     = $rdf
     UI.store.store   = UI.store.rdf.graph()
@@ -373,10 +376,6 @@
     var el = document.getElementById('animated-thumbnails')
     slides = []
     files = []
-    //g = $rdf.graph()
-    //f = $rdf.fetcher(g)
-    //u = new $rdf.UpdateManager(g)
-    //
     UI.store.fetcher.requestURI(fetchURI , undefined, true, processGraph)
 
   }
@@ -856,17 +855,6 @@
 
         setTimeout( function(e) {
           exitFullscreen()
-          /*
-          if (document.exitFullscreen) {
-            document.exitFullscreen()
-          } else if (document.msExitFullscreen) {
-            document.msExitFullscreen()
-          } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen()
-          } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen()
-          }
-          */
           if (doRefresh) {
             refresh()
           }
