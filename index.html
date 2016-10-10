@@ -201,14 +201,25 @@
 
     setTimeout(function () {
       for (var i = 0; i < files.length; i++) {
+        //setThumb(i)
+        /*
         var video = document.getElementsByTagName('video')[i]
         var canvas = document.createElement('canvas')
         canvas.getContext('2d').drawImage(video, 0, 0, 100, 80)
         var img = document.getElementsByTagName('img')[0]
         img.parentNode.replaceChild(canvas, img)
+        */
       }
     }, 5000)
 
+  }
+
+  function setThumb(num) {
+    var video = document.getElementsByTagName('video')[num]
+    var canvas = document.createElement('canvas')
+    canvas.getContext('2d').drawImage(video, 0, 0, 100, 80)
+    var img = document.getElementsByTagName('img')[0]
+    img.parentNode.replaceChild(canvas, img)
   }
 
   /**
@@ -958,7 +969,24 @@
       var file = files[i]
       if (file.startTime)  {
         var video = document.getElementById('v' + i)
+
         video.currentTime = file.startTime
+
+        if (video.readyState !== video.NETWORK_LOADING) {
+          (function(i, video){
+            console.log('video loaded', i, video, video.readyState)
+            setTimeout(function() {
+              setThumb(i)
+            }, 1000)
+          })(i, video)
+        } else {
+          video.onloadeddata = function() {
+            console.log('video loaded', this)
+          }
+        }
+
+
+
       }
       if (file.subtitle) {
         var video = document.getElementById('v' + i)
@@ -974,6 +1002,9 @@
         video.textTracks[0].mode = "showing"
         video.textTracks[1] = null
       }
+
+
+
 
     }
 
