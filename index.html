@@ -41,6 +41,7 @@
   var sort      = getParam('sort')
   var tag       = getParam('tag')
   var wss       = getParam('wss') || playlist || container
+  var loaded    = []
 
   var template
 
@@ -215,10 +216,26 @@
   }
 
   function setThumb(num) {
+    if (loaded.indexOf(num) !== -1) {
+      return
+    } else {
+      loaded.push(num)
+      console.log('rendering', num)
+      loaded = loaded.sort(function(a,b) {
+        return a - b
+      })
+    }
+    var ind = num
+    for (var i = 0; i < loaded.length; i++) {
+      var l = loaded[i]
+      if (l < num) {
+        ind--
+      }
+    }
     var video = document.getElementsByTagName('video')[num]
     var canvas = document.createElement('canvas')
     canvas.getContext('2d').drawImage(video, 0, 0, 100, 80)
-    var img = document.getElementsByTagName('img')[0]
+    var img = document.getElementsByTagName('img')[ind]
     img.parentNode.replaceChild(canvas, img)
   }
 
@@ -974,10 +991,17 @@
 
         if (video.readyState !== video.NETWORK_LOADING) {
           (function(i, video){
-            console.log('video loaded', i, video, video.readyState)
-            setTimeout(function() {
-              setThumb(i)
-            }, 1000)
+            function thumb(i, video) {
+              console.log('video loaded', i, video, video.readyState)
+              if (video.readyState === 4) {
+                setThumb(i)
+              } else {
+                setTimeout(function() {
+                  thumb(i, video)
+                }, 200)
+              }
+            }
+            thumb(i, video)
           })(i, video)
         } else {
           video.onloadeddata = function() {
