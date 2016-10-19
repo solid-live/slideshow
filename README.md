@@ -15,3 +15,14 @@ Slideshows are modelled in one of two ways.
 Either Via an LDP container using mtime which could also be a flat file.
 
 Or using Playlist slots using the playlist ontology.
+
+## LDPC Style
+
+```turtle
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+<>
+    <http://www.w3.org/ns/ldp#contains> 
+      <https://www.youtube.com/watch?v=Pq9yPrLWMyU>, 
+      <https://www.youtube.com/watch?v=meBbDqAXago> .
+```
